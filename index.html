@@ -2,2833 +2,4701 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070809">
-<meta name="description" content="Digital A4 Editorial">
+
+<meta
+  name="viewport"
+  content="width=device-width,
+  initial-scale=1,
+  maximum-scale=5,
+  viewport-fit=cover"
+>
+
+<meta name="theme-color" content="#08090b">
+
+<meta
+  name="description"
+  content="Digital A4 Archive — immersive online publication."
+>
+
 <title>THE ARCHIVE</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-:root{
---bg:#070809;
---panel:#101216;
---panel2:#15171c;
---white:#f6f4ee;
---muted:#858991;
---line:rgba(255,255,255,.11);
---ease:cubic-bezier(.2,.75,.25,1);
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-html,body{
-width:100%;
-min-height:100%;
-background:var(--bg);
+html {
+  background: #070809;
+  color-scheme: dark;
+  scroll-behavior: smooth;
 }
 
-body{
-font-family:
-Inter,
--apple-system,
-BlinkMacSystemFont,
-"Segoe UI",
-sans-serif;
-color:var(--white);
-overflow-x:hidden;
+body {
+  overflow: hidden;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(255,255,255,.045),
+      transparent 32%
+    ),
+    #070809;
+
+  color: #f5f5f2;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-button,input{
-font:inherit;
+button,
+input {
+  font: inherit;
 }
 
-button{
-cursor:pointer;
+button {
+  border: 0;
 }
 
-img{
-display:block;
-max-width:100%;
+img {
+  display: block;
+  max-width: 100%;
 }
 
 /* =========================================================
-LOADER
+   ROOT
 ========================================================= */
 
-#loader{
-position:fixed;
-inset:0;
-z-index:99999;
-display:grid;
-place-items:center;
-background:#070809;
-transition:
-opacity .55s ease,
-visibility .55s ease;
-}
+:root {
 
-#loader.hide{
-opacity:0;
-visibility:hidden;
-pointer-events:none;
-}
+  --bg: #070809;
 
-.loader-box{
-text-align:center;
-}
+  --surface: #101215;
 
-.loader-ring{
-width:54px;
-height:54px;
-border:1px solid rgba(255,255,255,.12);
-border-top-color:white;
-border-radius:50%;
-animation:spin 1s linear infinite;
-margin:auto;
-}
+  --surface-2: #15171b;
 
-.loader-label{
-margin-top:20px;
-font-size:9px;
-letter-spacing:.35em;
-text-transform:uppercase;
-color:#777b83;
-}
+  --surface-3: #1b1e23;
 
-@keyframes spin{
-to{transform:rotate(360deg)}
+  --line: rgba(255,255,255,.10);
+
+  --line-strong: rgba(255,255,255,.18);
+
+  --text: #f5f5f2;
+
+  --muted: #8c9199;
+
+  --muted-2: #656a72;
+
+  --accent: #ffffff;
+
+  --accent-dark: #08090b;
+
+  --danger: #ff5d67;
+
+  --success: #5ee7a3;
+
+  --warning: #ffd166;
+
+  --radius: 18px;
+
+  --shadow:
+    0 30px 80px rgba(0,0,0,.45);
+
+  --transition:
+    260ms cubic-bezier(.2,.8,.2,1);
 }
 
 /* =========================================================
-HEADER
+   SCROLLBAR
 ========================================================= */
 
-.header{
-position:fixed;
-top:0;
-left:0;
-right:0;
-height:78px;
-z-index:1000;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 clamp(16px,4vw,52px);
-pointer-events:none;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.header:before{
-content:"";
-position:absolute;
-inset:0;
-z-index:-1;
-background:
-linear-gradient(
-to bottom,
-rgba(7,8,9,.97),
-rgba(7,8,9,.75),
-transparent
-);
-backdrop-filter:blur(14px);
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.header>*{
-pointer-events:auto;
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.18);
+  border-radius: 999px;
 }
 
-.brand{
-display:flex;
-align-items:center;
-gap:14px;
-}
-
-.logo{
-width:29px;
-height:29px;
-border:1px solid rgba(255,255,255,.3);
-transform:rotate(45deg);
-display:grid;
-place-items:center;
-}
-
-.logo span{
-transform:rotate(-45deg);
-font-size:8px;
-}
-
-.brand-text{
-font-size:10px;
-font-weight:700;
-letter-spacing:.35em;
-}
-
-.header-actions{
-display:flex;
-gap:7px;
-}
-
-.icon{
-width:42px;
-height:42px;
-border:1px solid var(--line);
-border-radius:50%;
-background:rgba(255,255,255,.045);
-color:white;
-display:grid;
-place-items:center;
-font-size:16px;
-transition:.25s;
-}
-
-.icon:hover{
-background:rgba(255,255,255,.12);
-transform:translateY(-2px);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,.28);
 }
 
 /* =========================================================
-READER
+   LOADER
 ========================================================= */
 
-.reader{
-width:100%;
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:
-105px 12px
-100px;
+#loader {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 99999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-direction: column;
+
+  gap: 28px;
+
+  background: #070809;
+
+  transition:
+    opacity 700ms ease,
+    visibility 700ms ease;
 }
 
-.book{
-position:relative;
-width:min(92vw,calc(78vh * .70710678));
-aspect-ratio:.70710678;
-perspective:2400px;
+#loader.hidden {
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
 }
 
-.book:before{
-content:"";
-position:absolute;
-inset:3% -4% -4% 2%;
-background:#000;
-filter:blur(22px);
-opacity:.7;
-z-index:-2;
+.loader-ring {
+
+  position: relative;
+
+  width: 72px;
+
+  height: 72px;
+
+  border:
+    1px solid rgba(255,255,255,.12);
+
+  border-radius: 50%;
 }
 
-.page{
-position:absolute;
-inset:0;
-background:#fff;
-overflow:hidden;
-opacity:0;
-transform:
-translateX(45px)
-scale(.985);
-transition:
-opacity .45s var(--ease),
-transform .65s var(--ease);
-pointer-events:none;
+.loader-ring::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: -1px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid transparent;
+
+  border-top-color: #fff;
+
+  transform-origin: center;
+
+  animation:
+    loaderSpin 1.2s linear infinite;
 }
 
-.page.active{
-opacity:1;
-transform:translateX(0) scale(1);
-pointer-events:auto;
+.loader-ring::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 11px;
+
+  border-radius: 50%;
+
+  background: #070809;
+
 }
 
-.page img{
-width:100%;
-height:100%;
-object-fit:contain;
-background:white;
-user-select:none;
--webkit-user-drag:none;
+@keyframes loaderSpin {
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.empty{
-position:absolute;
-inset:0;
-display:none;
-place-items:center;
-text-align:center;
-border:1px solid var(--line);
-background:
-radial-gradient(
-circle at 50% 30%,
-#191c22,
-#090a0d
-);
+.loader-title {
+
+  font-size: 11px;
+
+  letter-spacing:
+    .42em;
+
+  text-transform: uppercase;
+
+  color: #858a92;
+
+  margin-left: .42em;
 }
 
-.empty.show{
-display:grid;
+.loader-progress {
+
+  width: 160px;
+
+  height: 1px;
+
+  background:
+    rgba(255,255,255,.10);
+
+  overflow: hidden;
 }
 
-.empty-title{
-font-size:12px;
-font-weight:700;
-letter-spacing:.2em;
-text-transform:uppercase;
-}
+.loader-progress-bar {
 
-.empty-text{
-margin-top:10px;
-font-size:10px;
-color:var(--muted);
+  width: 0%;
+
+  height: 100%;
+
+  background: #fff;
+
+  transition:
+    width 250ms ease;
 }
 
 /* =========================================================
-BOTTOM BAR
+   APPLICATION
 ========================================================= */
 
-.nav{
-position:fixed;
-left:50%;
-bottom:18px;
-transform:translateX(-50%);
-z-index:2000;
-display:flex;
-align-items:center;
-gap:6px;
-padding:8px;
-border:1px solid var(--line);
-background:rgba(9,10,13,.82);
-backdrop-filter:blur(24px);
-border-radius:999px;
-box-shadow:0 25px 80px rgba(0,0,0,.5);
+#app {
+
+  position: fixed;
+
+  inset: 0;
+
+  display: grid;
+
+  grid-template-rows:
+    72px
+    minmax(0,1fr)
+    76px;
+
+  opacity: 0;
+
+  transform:
+    scale(1.015);
+
+  transition:
+    opacity 700ms ease,
+    transform 900ms cubic-bezier(.2,.8,.2,1);
 }
 
-.nav-btn{
-width:42px;
-height:42px;
-border:0;
-border-radius:50%;
-background:rgba(255,255,255,.05);
-color:white;
-font-size:22px;
-display:grid;
-place-items:center;
-}
+#app.ready {
 
-.nav-btn:disabled{
-opacity:.2;
-cursor:default;
-}
+  opacity: 1;
 
-.counter{
-min-width:76px;
-text-align:center;
-font-size:9px;
-letter-spacing:.15em;
-color:#aaaeb6;
-}
-
-.progress{
-position:fixed;
-left:0;
-right:0;
-bottom:0;
-height:2px;
-background:rgba(255,255,255,.05);
-z-index:3000;
-}
-
-.progress-bar{
-height:100%;
-width:0;
-background:white;
-transition:width .5s var(--ease);
+  transform:
+    scale(1);
 }
 
 /* =========================================================
-THUMBNAILS
+   TOP BAR
 ========================================================= */
 
-.thumbs{
-position:fixed;
-left:50%;
-bottom:82px;
-transform:translateX(-50%);
-width:min(94vw,1050px);
-max-height:0;
-overflow:hidden;
-opacity:0;
-pointer-events:none;
-z-index:1800;
-border-radius:18px;
-background:rgba(10,11,14,.94);
-border:1px solid transparent;
-backdrop-filter:blur(25px);
-transition:
-max-height .4s var(--ease),
-opacity .3s;
+.topbar {
+
+  position: relative;
+
+  z-index: 50;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding:
+    0 clamp(18px,4vw,52px);
+
+  border-bottom:
+    1px solid var(--line);
+
+  background:
+    rgba(7,8,9,.78);
+
+  backdrop-filter:
+    blur(24px);
+
+  -webkit-backdrop-filter:
+    blur(24px);
 }
 
-.thumbs.open{
-max-height:230px;
-opacity:1;
-pointer-events:auto;
-border-color:var(--line);
+.brand {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  min-width: 0;
 }
 
-.thumb-list{
-display:flex;
-gap:10px;
-overflow-x:auto;
-padding:15px;
+.brand-mark {
+
+  width: 30px;
+
+  height: 30px;
+
+  border:
+    1px solid rgba(255,255,255,.28);
+
+  display: grid;
+
+  place-items: center;
+
+  font-size: 12px;
+
+  transform:
+    rotate(45deg);
 }
 
-.thumb{
-flex:0 0 75px;
-aspect-ratio:.707;
-border:2px solid transparent;
-border-radius:5px;
-overflow:hidden;
-background:white;
-opacity:.5;
+.brand-mark span {
+
+  transform:
+    rotate(-45deg);
 }
 
-.thumb.active{
-border-color:white;
-opacity:1;
+.brand-copy {
+
+  min-width: 0;
 }
 
-.thumb img{
-width:100%;
-height:100%;
-object-fit:cover;
+.brand-title {
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing:
+    .32em;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+.brand-sub {
+
+  margin-top: 3px;
+
+  font-size: 9px;
+
+  letter-spacing:
+    .18em;
+
+  color: var(--muted);
+
+  text-transform: uppercase;
+}
+
+.top-actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
 }
 
 /* =========================================================
-OVERLAY
+   BUTTONS
 ========================================================= */
 
-.overlay{
-position:fixed;
-inset:0;
-z-index:5000;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:15px;
-background:rgba(0,0,0,.78);
-backdrop-filter:blur(20px);
-opacity:0;
-visibility:hidden;
-transition:.3s;
+.icon-btn {
+
+  width: 42px;
+
+  height: 42px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 12px;
+
+  background:
+    transparent;
+
+  color: #e7e8e9;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
 }
 
-.overlay.open{
-opacity:1;
-visibility:visible;
+.icon-btn:hover {
+
+  background:
+    rgba(255,255,255,.07);
+
+  border-color:
+    var(--line);
+}
+
+.icon-btn:active {
+
+  transform:
+    scale(.92);
+}
+
+.icon-btn svg {
+
+  width: 19px;
+
+  height: 19px;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+
+  stroke-linejoin: round;
 }
 
 /* =========================================================
-LOGIN
+   VIEWPORT
 ========================================================= */
 
-.login{
-width:min(410px,100%);
-padding:32px;
-border:1px solid var(--line);
-border-radius:23px;
-background:#111318;
-box-shadow:0 50px 150px rgba(0,0,0,.75);
-}
+.viewport {
 
-.login h2{
-font-size:17px;
-letter-spacing:.13em;
-text-transform:uppercase;
-}
+  position: relative;
 
-.login p{
-font-size:10px;
-color:var(--muted);
-margin:8px 0 25px;
-}
+  min-height: 0;
 
-.field{
-margin-bottom:14px;
-}
+  overflow: hidden;
 
-.field label{
-display:block;
-font-size:9px;
-letter-spacing:.15em;
-text-transform:uppercase;
-color:var(--muted);
-margin-bottom:7px;
-}
+  display: grid;
 
-.field input{
-width:100%;
-height:46px;
-padding:0 13px;
-border:1px solid var(--line);
-border-radius:10px;
-outline:none;
-background:rgba(255,255,255,.04);
-color:white;
-}
+  place-items: center;
 
-.field input:focus{
-border-color:rgba(255,255,255,.4);
-}
+  perspective: 1800px;
 
-.actions{
-display:flex;
-gap:8px;
-margin-top:20px;
+  padding:
+    clamp(12px,2vw,28px);
 }
 
 /* =========================================================
-BUTTON
+   BOOK STAGE
 ========================================================= */
 
-.btn{
-height:43px;
-padding:0 16px;
-border:1px solid var(--line);
-border-radius:10px;
-background:rgba(255,255,255,.05);
-color:white;
-font-size:9px;
-font-weight:700;
-letter-spacing:.12em;
-text-transform:uppercase;
-}
+.book-stage {
 
-.btn:hover{
-background:rgba(255,255,255,.12);
-}
+  position: relative;
 
-.btn.primary{
-background:white;
-color:#08090a;
-border-color:white;
+  width: min(
+    92vw,
+    calc((100vh - 180px) * .7071)
+  );
+
+  aspect-ratio:
+    1 / 1.41421356;
+
+  max-height:
+    calc(100% - 4px);
+
+  transition:
+    width 300ms ease,
+    transform 300ms ease;
 }
 
 /* =========================================================
-ADMIN
+   A4 PAGE
 ========================================================= */
 
-.admin{
-width:min(1100px,100%);
-max-height:calc(100vh - 30px);
-overflow:auto;
-background:#101216;
-border:1px solid var(--line);
-border-radius:23px;
-box-shadow:0 50px 160px rgba(0,0,0,.8);
+.book {
+
+  position: relative;
+
+  width: 100%;
+
+  height: 100%;
+
+  transform-style:
+    preserve-3d;
+
+  filter:
+    drop-shadow(
+      0 30px 50px rgba(0,0,0,.45)
+    );
 }
 
-.admin-head{
-position:sticky;
-top:0;
-z-index:10;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px 24px;
-background:rgba(16,18,22,.94);
-backdrop-filter:blur(20px);
-border-bottom:1px solid var(--line);
+.page {
+
+  position: absolute;
+
+  inset: 0;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  color: #111;
+
+  transform-origin:
+    left center;
+
+  transform-style:
+    preserve-3d;
+
+  backface-visibility:
+    hidden;
+
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.08);
+
+  transition:
+    transform 850ms cubic-bezier(.2,.72,.16,1),
+    filter 600ms ease;
 }
 
-.admin-title{
-font-size:16px;
-font-weight:700;
-letter-spacing:.13em;
-text-transform:uppercase;
+.page img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+  user-select: none;
+
+  -webkit-user-drag: none;
 }
 
-.admin-subtitle{
-margin-top:6px;
-font-size:9px;
-color:var(--muted);
+.page.active {
+
+  z-index: 20;
+
+  transform:
+    rotateY(0deg);
+
+  filter:
+    brightness(1);
 }
 
-.green{
-color:#7ce0a0;
+.page.turned {
+
+  z-index: 10;
+
+  transform:
+    rotateY(-180deg);
+
+  filter:
+    brightness(.72);
 }
 
-.admin-body{
-padding:24px;
+.page.next {
+
+  z-index: 15;
+
+  transform:
+    rotateY(0deg);
+}
+
+.page-shadow {
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,0,0,.18),
+      transparent 18%,
+      transparent 82%,
+      rgba(0,0,0,.15)
+    );
+
+  mix-blend-mode:
+    multiply;
+
+  opacity: .15;
 }
 
 /* =========================================================
-UPLOAD
+   EMPTY STATE
 ========================================================= */
 
-.upload{
-min-height:190px;
-border:1px dashed rgba(255,255,255,.18);
-border-radius:18px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-gap:12px;
-cursor:pointer;
-transition:.25s;
-background:rgba(255,255,255,.025);
+.empty {
+
+  position: absolute;
+
+  inset: 0;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 30px;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255,255,255,.035),
+      transparent 50%
+    );
 }
 
-.upload:hover,
-.upload.drag{
-background:rgba(255,255,255,.07);
-border-color:rgba(255,255,255,.5);
+.empty-inner {
+
+  max-width: 440px;
 }
 
-.plus{
-width:58px;
-height:58px;
-display:grid;
-place-items:center;
-border-radius:50%;
-background:white;
-color:#050609;
-font-size:29px;
+.empty-symbol {
+
+  width: 80px;
+
+  height: 80px;
+
+  margin: 0 auto 25px;
+
+  border:
+    1px solid rgba(255,255,255,.16);
+
+  display: grid;
+
+  place-items: center;
+
+  font-size: 28px;
+
+  color: #aaa;
+
+  transform:
+    rotate(45deg);
 }
 
-.upload strong{
-font-size:11px;
-letter-spacing:.13em;
+.empty-symbol span {
+
+  transform:
+    rotate(-45deg);
 }
 
-.upload small{
-font-size:9px;
-color:var(--muted);
+.empty h1 {
+
+  margin: 0;
+
+  font-size:
+    clamp(18px,2vw,26px);
+
+  font-weight: 500;
+
+  letter-spacing:
+    -.02em;
 }
 
-#file{
-display:none;
+.empty p {
+
+  margin:
+    12px 0 0;
+
+  color: var(--muted);
+
+  font-size: 13px;
+
+  line-height: 1.7;
 }
 
 /* =========================================================
-LIST
+   NAVIGATION
 ========================================================= */
 
-.list-head{
-display:flex;
-justify-content:space-between;
-margin:25px 0 12px;
-font-size:9px;
-letter-spacing:.15em;
-text-transform:uppercase;
-color:var(--muted);
+.nav-left,
+.nav-right {
+
+  position: absolute;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  z-index: 35;
+
+  width: 54px;
+
+  height: 54px;
+
+  border:
+    1px solid rgba(255,255,255,.12);
+
+  border-radius: 50%;
+
+  background:
+    rgba(7,8,9,.64);
+
+  backdrop-filter:
+    blur(15px);
+
+  color: white;
+
+  display: grid;
+
+  place-items: center;
+
+  cursor: pointer;
+
+  transition:
+    transform var(--transition),
+    background var(--transition),
+    opacity var(--transition);
 }
 
-.list{
-display:grid;
-gap:7px;
+.nav-left {
+
+  left:
+    clamp(10px,3vw,42px);
 }
 
-.row{
-display:grid;
-grid-template-columns:58px minmax(0,1fr) auto;
-align-items:center;
-gap:13px;
-padding:9px;
-background:rgba(255,255,255,.035);
-border:1px solid rgba(255,255,255,.06);
-border-radius:13px;
+.nav-right {
+
+  right:
+    clamp(10px,3vw,42px);
 }
 
-.row-img{
-width:58px;
-aspect-ratio:.707;
-overflow:hidden;
-background:white;
-border-radius:6px;
+.nav-left:hover,
+.nav-right:hover {
+
+  background:
+    rgba(255,255,255,.12);
+
+  transform:
+    translateY(-50%)
+    scale(1.06);
 }
 
-.row-img img{
-width:100%;
-height:100%;
-object-fit:cover;
+.nav-left:disabled,
+.nav-right:disabled {
+
+  opacity: .25;
+
+  cursor: default;
 }
 
-.row-title{
-font-size:11px;
-overflow:hidden;
-text-overflow:ellipsis;
-white-space:nowrap;
-}
+.nav-left svg,
+.nav-right svg {
 
-.row-meta{
-margin-top:5px;
-font-size:8px;
-color:var(--muted);
-}
+  width: 20px;
 
-.row-buttons{
-display:flex;
-gap:5px;
-}
+  height: 20px;
 
-.small{
-width:34px;
-height:34px;
-display:grid;
-place-items:center;
-border:1px solid var(--line);
-border-radius:8px;
-background:rgba(255,255,255,.05);
-color:white;
-}
+  fill: none;
 
-.small:hover{
-background:rgba(255,255,255,.12);
+  stroke: currentColor;
+
+  stroke-width: 1.5;
 }
 
 /* =========================================================
-ADMIN FOOTER
+   BOTTOM BAR
 ========================================================= */
 
-.admin-foot{
-position:sticky;
-bottom:0;
-z-index:10;
-display:flex;
-justify-content:flex-end;
-gap:8px;
-padding:14px 24px;
-border-top:1px solid var(--line);
-background:rgba(16,18,22,.95);
-backdrop-filter:blur(20px);
+.bottombar {
+
+  position: relative;
+
+  z-index: 50;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: center;
+
+  padding:
+    0 clamp(18px,4vw,52px);
+
+  border-top:
+    1px solid var(--line);
+
+  background:
+    rgba(7,8,9,.80);
+
+  backdrop-filter:
+    blur(24px);
+
+  -webkit-backdrop-filter:
+    blur(24px);
+}
+
+.bottom-left {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.bottom-right {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 5px;
+}
+
+.page-counter {
+
+  font-variant-numeric:
+    tabular-nums;
+
+  font-size: 11px;
+
+  letter-spacing:
+    .16em;
+
+  color: var(--muted);
+
+  white-space: nowrap;
+}
+
+.page-counter strong {
+
+  color: #fff;
+
+  font-weight: 500;
 }
 
 /* =========================================================
-ZOOM
+   THUMBNAILS
 ========================================================= */
 
-.zoom{
-position:fixed;
-inset:0;
-z-index:9000;
-display:none;
-align-items:center;
-justify-content:center;
-background:rgba(0,0,0,.96);
-padding:20px;
+.thumb-strip {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  max-width:
+    min(50vw,600px);
+
+  overflow-x: auto;
+
+  scrollbar-width: none;
+
+  padding:
+    5px;
 }
 
-.zoom.open{
-display:flex;
+.thumb-strip::-webkit-scrollbar {
+  display: none;
 }
 
-.zoom img{
-max-width:96vw;
-max-height:92vh;
-object-fit:contain;
-transition:.25s;
+.thumb {
+
+  flex:
+    0 0 auto;
+
+  width: 30px;
+
+  height: 42px;
+
+  padding: 0;
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  background:
+    #15171a;
+
+  opacity: .45;
+
+  cursor: pointer;
+
+  transition:
+    opacity var(--transition),
+    transform var(--transition),
+    border-color var(--transition);
 }
 
-.zoom img.big{
-transform:scale(2);
+.thumb img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.thumb:hover {
+
+  opacity: .8;
+
+  transform:
+    translateY(-2px);
+}
+
+.thumb.active {
+
+  opacity: 1;
+
+  border-color:
+    rgba(255,255,255,.8);
+
+  transform:
+    translateY(-3px);
 }
 
 /* =========================================================
-TOAST
+   ZOOM
 ========================================================= */
 
-.toast{
-position:fixed;
-top:88px;
-left:50%;
-z-index:10000;
-transform:translate(-50%,-15px);
-padding:12px 18px;
-border:1px solid var(--line);
-border-radius:999px;
-background:#111318;
-font-size:9px;
-opacity:0;
-pointer-events:none;
-transition:.3s;
+#zoomLayer {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 500;
+
+  display: none;
+
+  place-items: center;
+
+  padding: 30px;
+
+  background:
+    rgba(0,0,0,.92);
+
+  backdrop-filter:
+    blur(20px);
 }
 
-.toast.show{
-opacity:1;
-transform:translate(-50%,0);
+#zoomLayer.visible {
+
+  display: grid;
+}
+
+.zoom-image {
+
+  max-width:
+    96vw;
+
+  max-height:
+    92vh;
+
+  object-fit: contain;
+
+  box-shadow:
+    0 40px 100px rgba(0,0,0,.7);
+
+  user-select: none;
+
+  cursor:
+    zoom-out;
 }
 
 /* =========================================================
-MOBILE
+   ADMIN OVERLAY
 ========================================================= */
 
-@media(max-width:700px){
+.modal {
 
-.reader{
-padding:88px 3px 92px;
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1000;
+
+  display: none;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  background:
+    rgba(0,0,0,.72);
+
+  backdrop-filter:
+    blur(22px);
+
+  -webkit-backdrop-filter:
+    blur(22px);
 }
 
-.book{
-width:97vw;
+.modal.open {
+
+  display: flex;
+
+  animation:
+    modalIn 300ms ease;
 }
 
-.brand-text{
-display:none;
+@keyframes modalIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-.admin-body{
-padding:14px;
+.modal-card {
+
+  width:
+    min(720px,100%);
+
+  max-height:
+    min(850px,92vh);
+
+  overflow: auto;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    22px;
+
+  background:
+    rgba(16,18,21,.96);
+
+  box-shadow:
+    0 40px 120px rgba(0,0,0,.65);
+
+  animation:
+    cardIn 400ms cubic-bezier(.2,.8,.2,1);
 }
 
-.admin-head{
-padding:16px;
+@keyframes cardIn {
+
+  from {
+
+    opacity: 0;
+
+    transform:
+      translateY(20px)
+      scale(.97);
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
 }
 
-.admin-foot{
-padding:12px 14px;
+.modal-head {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding:
+    22px 24px;
+
+  border-bottom:
+    1px solid var(--line);
 }
 
-.row{
-grid-template-columns:50px minmax(0,1fr) auto;
+.modal-title {
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  letter-spacing:
+    .2em;
+
+  text-transform: uppercase;
 }
 
-.row-img{
-width:50px;
-}
+.modal-body {
 
-.row-buttons{
-flex-direction:column;
-}
-
-.thumbs{
-bottom:74px;
-}
-
+  padding: 24px;
 }
 
 /* =========================================================
-LANDSCAPE
+   ADMIN LOGIN
 ========================================================= */
 
-@media(
-max-height:560px
-) and (
-orientation:landscape
-){
+.field {
 
-.reader{
-padding:70px 8px;
+  margin-bottom: 18px;
 }
 
-.book{
-height:78vh;
-width:calc(78vh * .70710678);
+.field label {
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  letter-spacing:
+    .16em;
+
+  text-transform: uppercase;
 }
 
+.field input {
+
+  width: 100%;
+
+  height: 48px;
+
+  padding:
+    0 15px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 11px;
+
+  outline: none;
+
+  background:
+    #0b0d0f;
+
+  color: white;
+
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.field input:focus {
+
+  border-color:
+    rgba(255,255,255,.4);
+
+  box-shadow:
+    0 0 0 4px rgba(255,255,255,.04);
+}
+
+.help {
+
+  color: var(--muted);
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  margin:
+    10px 0 20px;
 }
 
 /* =========================================================
-REDUCED MOTION
+   ADMIN DASHBOARD
 ========================================================= */
 
-@media(prefers-reduced-motion:reduce){
+.admin-grid {
 
-*{
-animation-duration:.01ms!important;
-transition-duration:.01ms!important;
+  display: grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap: 10px;
+
+  margin-bottom: 20px;
 }
 
+.admin-button {
+
+  min-height: 48px;
+
+  padding:
+    0 15px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 11px;
+
+  background:
+    #14161a;
+
+  color: white;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
 }
+
+.admin-button:hover {
+
+  background:
+    #1c1f24;
+
+  border-color:
+    var(--line-strong);
+}
+
+.admin-button:active {
+
+  transform:
+    scale(.98);
+}
+
+.admin-button.primary {
+
+  background:
+    #fff;
+
+  color:
+    #08090b;
+
+  border-color:
+    #fff;
+}
+
+.admin-button.danger {
+
+  color:
+    #ff8b92;
+
+  border-color:
+    rgba(255,93,103,.22);
+}
+
+.drop-zone {
+
+  position: relative;
+
+  display: grid;
+
+  place-items: center;
+
+  min-height: 180px;
+
+  padding: 25px;
+
+  border:
+    1px dashed rgba(255,255,255,.20);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255,255,255,.025);
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.drop-zone:hover,
+.drop-zone.drag {
+
+  background:
+    rgba(255,255,255,.06);
+
+  border-color:
+    rgba(255,255,255,.55);
+}
+
+.drop-icon {
+
+  width: 54px;
+
+  height: 54px;
+
+  margin:
+    0 auto 14px;
+
+  border:
+    1px solid rgba(255,255,255,.18);
+
+  border-radius: 50%;
+
+  display: grid;
+
+  place-items: center;
+
+  font-size: 23px;
+}
+
+.drop-title {
+
+  font-size: 13px;
+
+  font-weight: 500;
+}
+
+.drop-sub {
+
+  margin-top: 7px;
+
+  font-size: 10px;
+
+  color: var(--muted);
+
+  letter-spacing:
+    .08em;
+}
+
+#imageInput {
+
+  position: absolute;
+
+  width: 1px;
+
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   ADMIN LIST
+========================================================= */
+
+.admin-list {
+
+  margin-top: 20px;
+
+  display: grid;
+
+  gap: 8px;
+}
+
+.admin-item {
+
+  display: grid;
+
+  grid-template-columns:
+    44px
+    1fr
+    auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  min-height: 60px;
+
+  padding:
+    7px 10px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 12px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.admin-thumb {
+
+  width: 44px;
+
+  height: 55px;
+
+  overflow: hidden;
+
+  background: #000;
+}
+
+.admin-thumb img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.admin-name {
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: 11px;
+}
+
+.admin-meta {
+
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+
+  letter-spacing: .05em;
+}
+
+.item-actions {
+
+  display: flex;
+
+  gap: 4px;
+}
+
+.small-btn {
+
+  width: 32px;
+
+  height: 32px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 8px;
+
+  background:
+    transparent;
+
+  color: #ddd;
+
+  cursor: pointer;
+}
+
+.small-btn:hover {
+
+  background:
+    rgba(255,255,255,.08);
+}
+
+.small-btn.danger {
+
+  color:
+    #ff777f;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast {
+
+  position: fixed;
+
+  left: 50%;
+
+  bottom: 96px;
+
+  z-index: 5000;
+
+  max-width:
+    min(90vw,500px);
+
+  padding:
+    12px 17px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 999px;
+
+  background:
+    rgba(18,20,23,.94);
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,.45);
+
+  color: #fff;
+
+  font-size: 11px;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transform:
+    translate(-50%,15px);
+
+  transition:
+    opacity 250ms ease,
+    transform 250ms ease;
+}
+
+#toast.show {
+
+  opacity: 1;
+
+  transform:
+    translate(-50%,0);
+}
+
+#toast.success {
+
+  border-color:
+    rgba(94,231,163,.3);
+}
+
+#toast.error {
+
+  border-color:
+    rgba(255,93,103,.3);
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 18px;
+
+  font-size: 10px;
+
+  color: var(--muted);
+
+  letter-spacing:
+    .08em;
+
+  text-transform: uppercase;
+}
+
+.status-dot {
+
+  width: 7px;
+
+  height: 7px;
+
+  border-radius: 50%;
+
+  background:
+    var(--success);
+
+  box-shadow:
+    0 0 12px rgba(94,231,163,.6);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  #app {
+
+    grid-template-rows:
+      60px
+      minmax(0,1fr)
+      64px;
+  }
+
+  .brand-sub {
+
+    display: none;
+  }
+
+  .brand-title {
+
+    font-size: 10px;
+  }
+
+  .brand-mark {
+
+    width: 26px;
+
+    height: 26px;
+  }
+
+  .top-actions .icon-btn {
+
+    width: 38px;
+
+    height: 38px;
+  }
+
+  .viewport {
+
+    padding:
+      7px;
+  }
+
+  .book-stage {
+
+    width:
+      min(
+        92vw,
+        calc((100vh - 138px) * .7071)
+      );
+  }
+
+  .nav-left,
+  .nav-right {
+
+    width: 44px;
+
+    height: 44px;
+
+    background:
+      rgba(7,8,9,.45);
+  }
+
+  .nav-left {
+
+    left: 5px;
+  }
+
+  .nav-right {
+
+    right: 5px;
+  }
+
+  .bottombar {
+
+    grid-template-columns:
+      1fr
+      auto;
+
+    padding:
+      0 12px;
+  }
+
+  .thumb-strip {
+
+    display: none;
+  }
+
+  .bottom-left {
+
+    gap: 6px;
+  }
+
+  .page-counter {
+
+    font-size: 9px;
+  }
+
+  .bottom-right {
+
+    gap: 0;
+  }
+
+  .icon-btn {
+
+    width: 38px;
+
+    height: 38px;
+  }
+
+  .admin-grid {
+
+    grid-template-columns:
+      1fr;
+  }
+
+  .modal {
+
+    padding: 8px;
+  }
+
+  .modal-card {
+
+    max-height:
+      96vh;
+
+    border-radius:
+      17px;
+  }
+
+  .modal-body {
+
+    padding: 17px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+
+    animation-duration:
+      .001ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      .001ms !important;
+
+    scroll-behavior:
+      auto !important;
+  }
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print {
+
+  body {
+
+    overflow: visible;
+
+    background: white;
+  }
+
+  #loader,
+  .topbar,
+  .bottombar,
+  .nav-left,
+  .nav-right,
+  .modal,
+  #toast {
+
+    display: none !important;
+  }
+
+  #app {
+
+    position: static;
+
+    display: block;
+
+    opacity: 1;
+
+    transform: none;
+  }
+
+  .viewport {
+
+    overflow: visible;
+
+    padding: 0;
+  }
+
+  .book-stage {
+
+    width: 210mm;
+
+    height: 297mm;
+
+    max-height: none;
+  }
+
+  .page {
+
+    position: static;
+
+    display: none;
+
+    width: 210mm;
+
+    height: 297mm;
+
+    page-break-after: always;
+
+    transform: none !important;
+  }
+
+  .page.active {
+
+    display: block;
+  }
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- ========================================================
-LOADER
+<!-- =======================================================
+     LOADER
 ======================================================== -->
 
 <div id="loader">
-<div class="loader-box">
-<div class="loader-ring"></div>
-<div class="loader-label">Preparing the archive</div>
-</div>
+
+  <div class="loader-ring"></div>
+
+  <div class="loader-title">
+    Preparing the archive
+  </div>
+
+  <div class="loader-progress">
+    <div
+      id="loaderProgress"
+      class="loader-progress-bar">
+    </div>
+  </div>
+
 </div>
 
-<!-- ========================================================
-HEADER
+
+<!-- =======================================================
+     APPLICATION
 ======================================================== -->
 
-<header class="header">
+<div id="app">
 
-<div class="brand">
-<div class="logo"><span>◆</span></div>
-<div class="brand-text">THE ARCHIVE</div>
-</div>
+  <!-- TOP BAR -->
+  <header class="topbar">
 
-<div class="header-actions">
+    <div class="brand">
 
-<button
-class="icon"
-id="thumbButton"
-title="Pages"
->▦</button>
+      <div class="brand-mark">
+        <span>◆</span>
+      </div>
 
-<button
-class="icon"
-id="fullButton"
-title="Fullscreen"
->⛶</button>
+      <div class="brand-copy">
 
-<button
-class="icon"
-id="adminButton"
-title="Admin"
->⚙</button>
+        <div
+          id="brandTitle"
+          class="brand-title">
+          THE ARCHIVE
+        </div>
 
-</div>
+        <div class="brand-sub">
+          Digital Publication
+        </div>
 
-</header>
+      </div>
 
-<!-- ========================================================
-READER
-======================================================== -->
+    </div>
 
-<main class="reader">
 
-<section class="book">
+    <div class="top-actions">
 
-<div id="book"></div>
+      <!-- Thumbnails -->
+      <button
+        id="thumbButton"
+        class="icon-btn"
+        title="Pages"
+        aria-label="Pages">
 
-<div
-class="empty"
-id="empty"
->
+        <svg viewBox="0 0 24 24">
+          <rect x="4" y="4" width="6" height="6"/>
+          <rect x="14" y="4" width="6" height="6"/>
+          <rect x="4" y="14" width="6" height="6"/>
+          <rect x="14" y="14" width="6" height="6"/>
+        </svg>
 
-<div>
-<div class="empty-title">
-No published pages
-</div>
+      </button>
 
-<div class="empty-text">
-Add pages from the Admin panel.
-</div>
-</div>
 
-</div>
+      <!-- Fullscreen -->
+      <button
+        id="fullscreenButton"
+        class="icon-btn"
+        title="Fullscreen"
+        aria-label="Fullscreen">
 
-</section>
+        <svg viewBox="0 0 24 24">
+          <path d="M8 3H3v5"/>
+          <path d="M16 3h5v5"/>
+          <path d="M21 16v5h-5"/>
+          <path d="M3 16v5h5"/>
+        </svg>
 
-</main>
+      </button>
 
-<!-- ========================================================
-NAV
-======================================================== -->
 
-<nav class="nav">
+      <!-- Admin -->
+      <button
+        id="adminButton"
+        class="icon-btn"
+        title="Admin"
+        aria-label="Admin">
 
-<button
-class="nav-btn"
-id="prev"
->‹</button>
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-2.6V20a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H4v-2.6h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V4h2.6v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v2.6h-.2a1.7 1.7 0 0 0-1.6 1z"/>
+        </svg>
 
-<div
-class="counter"
-id="counter"
->0 / 0</div>
+      </button>
 
-<button
-class="nav-btn"
-id="next"
->›</button>
+    </div>
 
-</nav>
+  </header>
 
-<div class="progress">
-<div
-class="progress-bar"
-id="progress"
-></div>
-</div>
 
-<!-- ========================================================
-THUMBNAILS
-======================================================== -->
+  <!-- VIEWPORT -->
+  <main class="viewport">
 
-<section
-class="thumbs"
-id="thumbs"
->
+    <button
+      id="prevButton"
+      class="nav-left"
+      aria-label="Previous page">
 
-<div
-class="thumb-list"
-id="thumbList"
-></div>
+      <svg viewBox="0 0 24 24">
+        <path d="M15 5l-7 7 7 7"/>
+      </svg>
 
-</section>
+    </button>
 
-<!-- ========================================================
-ZOOM
-======================================================== -->
 
-<div
-class="zoom"
-id="zoom"
->
+    <div class="book-stage">
 
-<img id="zoomImage">
+      <div
+        id="book"
+        class="book">
+      </div>
 
-<button
-class="icon"
-id="closeZoom"
-style="
-position:absolute;
-top:20px;
-right:20px;
-"
->×</button>
+      <div
+        id="emptyState"
+        class="empty"
+        style="display:none;">
 
-</div>
+        <div class="empty-inner">
 
-<!-- ========================================================
-LOGIN
-======================================================== -->
+          <div class="empty-symbol">
+            <span>+</span>
+          </div>
 
-<div
-class="overlay"
-id="loginOverlay"
->
+          <h1>
+            No published pages
+          </h1>
 
-<form
-class="login"
-id="loginForm"
->
+          <p>
+            Open the Admin panel to add pages
+            to this publication.
+          </p>
 
-<h2>Admin Access</h2>
+        </div>
 
-<p>
-Sign in to manage this publication.
-</p>
+      </div>
 
-<div class="field">
-<label>Email</label>
-<input
-id="email"
-type="email"
-required
-autocomplete="username"
->
-</div>
+    </div>
 
-<div class="field">
-<label>Password</label>
-<input
-id="password"
-type="password"
-required
-autocomplete="current-password"
->
-</div>
 
-<div class="actions">
+    <button
+      id="nextButton"
+      class="nav-right"
+      aria-label="Next page">
 
-<button
-type="button"
-class="btn"
-id="cancelLogin"
->
-Cancel
-</button>
+      <svg viewBox="0 0 24 24">
+        <path d="M9 5l7 7-7 7"/>
+      </svg>
 
-<button
-class="btn primary"
-style="flex:1"
-id="loginSubmit"
->
-Login
-</button>
+    </button>
 
-</div>
+  </main>
 
-</form>
 
-</div>
+  <!-- BOTTOM BAR -->
+  <footer class="bottombar">
 
-<!-- ========================================================
-ADMIN
-======================================================== -->
+    <div class="bottom-left">
 
-<div
-class="overlay"
-id="adminOverlay"
->
+      <div class="page-counter">
 
-<section class="admin">
+        <strong id="currentPage">
+          0
+        </strong>
 
-<header class="admin-head">
+        <span>
+          /
+        </span>
 
-<div>
+        <span id="totalPages">
+          0
+        </span>
 
-<div class="admin-title">
-Content Manager
-</div>
+      </div>
 
-<div class="admin-subtitle">
-Secure workspace ·
-<span class="green">ONLINE</span>
-</div>
+    </div>
+
+
+    <div
+      id="thumbStrip"
+      class="thumb-strip">
+    </div>
+
+
+    <div class="bottom-right">
+
+      <button
+        id="zoomButton"
+        class="icon-btn"
+        title="Zoom"
+        aria-label="Zoom">
+
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="6"/>
+          <path d="M16 16l5 5"/>
+          <path d="M11 8v6"/>
+          <path d="M8 11h6"/>
+        </svg>
+
+      </button>
+
+
+      <button
+        id="helpButton"
+        class="icon-btn"
+        title="Keyboard shortcuts"
+        aria-label="Help">
+
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.8 9a2.3 2.3 0 1 1 3.8 1.7c-.9.8-1.6 1.2-1.6 2.4"/>
+          <path d="M12 16.5h.01"/>
+        </svg>
+
+      </button>
+
+    </div>
+
+  </footer>
 
 </div>
 
-<button
-class="icon"
-id="closeAdmin"
->×</button>
 
-</header>
-
-<div class="admin-body">
-
-<label
-class="upload"
-id="upload"
->
-
-<input
-type="file"
-id="file"
-multiple
-accept="image/jpeg,image/png,image/webp,image/avif"
->
-
-<div class="plus">+</div>
-
-<strong>ADD IMAGES</strong>
-
-<small>
-JPG · PNG · WEBP · AVIF · MULTIPLE
-</small>
-
-</label>
-
-<div class="list-head">
-
-<span>Pages</span>
-
-<span id="pageCount">
-0 pages
-</span>
-
-</div>
-
-<div
-class="list"
-id="adminList"
-></div>
-
-</div>
-
-<footer class="admin-foot">
-
-<button
-class="btn"
-id="refresh"
->
-Refresh
-</button>
-
-<button
-class="btn"
-id="logout"
->
-Logout
-</button>
-
-<button
-class="btn primary"
-id="publish"
->
-Publish
-</button>
-
-</footer>
-
-</section>
-
-</div>
-
-<!-- ========================================================
-TOAST
+<!-- =======================================================
+     ZOOM
 ======================================================== -->
 
 <div
-class="toast"
-id="toast"
-></div>
+  id="zoomLayer"
+  aria-hidden="true">
+
+  <img
+    id="zoomImage"
+    class="zoom-image"
+    alt="Zoomed page">
+
+</div>
+
+
+<!-- =======================================================
+     ADMIN MODAL
+======================================================== -->
+
+<div
+  id="adminModal"
+  class="modal">
+
+  <div class="modal-card">
+
+    <div class="modal-head">
+
+      <div
+        id="adminModalTitle"
+        class="modal-title">
+        Admin Access
+      </div>
+
+      <button
+        id="closeAdmin"
+        class="icon-btn"
+        aria-label="Close">
+
+        <svg viewBox="0 0 24 24">
+          <path d="M6 6l12 12"/>
+          <path d="M18 6L6 18"/>
+        </svg>
+
+      </button>
+
+    </div>
+
+
+    <!-- LOGIN -->
+    <div
+      id="loginView"
+      class="modal-body">
+
+      <div class="status">
+
+        <span class="status-dot"></span>
+
+        Secure workspace
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          GitHub Owner
+        </label>
+
+        <input
+          id="githubOwner"
+          type="text"
+          value="xynystudio"
+          autocomplete="off">
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Repository
+        </label>
+
+        <input
+          id="githubRepo"
+          type="text"
+          value="e-boook"
+          autocomplete="off">
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          GitHub Token
+        </label>
+
+        <input
+          id="githubToken"
+          type="password"
+          placeholder="github_pat_..."
+          autocomplete="off">
+
+      </div>
+
+
+      <div class="help">
+
+        Token digunakan hanya di browser untuk
+        mengirim gambar dan <code>pages.json</code>
+        ke repository GitHub. Token tidak disimpan
+        ke dalam source code.
+
+      </div>
+
+
+      <button
+        id="loginButton"
+        class="admin-button primary"
+        style="width:100%;">
+
+        CONNECT TO GITHUB
+
+      </button>
+
+    </div>
+
+
+    <!-- DASHBOARD -->
+    <div
+      id="dashboardView"
+      class="modal-body"
+      style="display:none;">
+
+      <div class="status">
+
+        <span class="status-dot"></span>
+
+        GitHub connected
+
+      </div>
+
+
+      <div class="admin-grid">
+
+        <button
+          id="addImagesButton"
+          class="admin-button primary">
+
+          ＋ ADD IMAGES
+
+        </button>
+
+        <button
+          id="refreshAdminButton"
+          class="admin-button">
+
+          ↻ REFRESH
+
+        </button>
+
+        <button
+          id="publishButton"
+          class="admin-button primary">
+
+          ↑ PUBLISH
+
+        </button>
+
+        <button
+          id="logoutButton"
+          class="admin-button danger">
+
+          LOG OUT
+
+        </button>
+
+      </div>
+
+
+      <div
+        id="dropZone"
+        class="drop-zone">
+
+        <input
+          id="imageInput"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          multiple>
+
+        <div>
+
+          <div class="drop-icon">
+            ＋
+          </div>
+
+          <div class="drop-title">
+            Add pages to the archive
+          </div>
+
+          <div class="drop-sub">
+            JPG · PNG · WEBP · AVIF · MULTIPLE FILES
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="adminList"
+        class="admin-list">
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     TOAST
+======================================================== -->
+
+<div
+  id="toast">
+</div>
 
 
 <script>
+
 /* =========================================================
-CONFIG
+   CONFIGURATION
 ========================================================= */
 
-/*
-PASTE DARI SUPABASE:
+const CONFIG = {
 
-Project Settings
-→ API
+  title:
+    "THE ARCHIVE",
 
-Gunakan Project URL dan Publishable Key.
+  manifest:
+    "pages.json",
 
-JANGAN masukkan service_role key.
-*/
+  pagesFolder:
+    "pages",
 
-const SUPABASE_URL =
-"PASTE_SUPABASE_PROJECT_URL_HERE";
+  githubBranch:
+    "main",
 
-const SUPABASE_KEY =
-"PASTE_SUPABASE_PUBLISHABLE_KEY_HERE";
+  maxImageSizeMB:
+    20,
+
+  acceptedTypes: [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/avif"
+  ]
+
+};
 
 
 /* =========================================================
-SAFE CONFIG CHECK
+   STATE
 ========================================================= */
 
-const CONFIGURED =
-SUPABASE_URL.startsWith("https://") &&
-!SUPABASE_URL.includes("PASTE_") &&
-SUPABASE_KEY.length > 20 &&
-!SUPABASE_KEY.includes("PASTE_");
+const state = {
+
+  pages: [],
+
+  current: 0,
+
+  github: {
+
+    owner: "",
+
+    repo: "",
+
+    token: "",
+
+    branch:
+      CONFIG.githubBranch
+
+  },
+
+  localChanges: false,
+
+  busy: false,
+
+  touch: {
+
+    x: 0,
+
+    y: 0
+
+  }
+
+};
 
 
 /* =========================================================
-SUPABASE CLIENT
+   DOM
 ========================================================= */
 
-let supabaseClient = null;
+const $ = selector =>
+  document.querySelector(selector);
 
-if(
-CONFIGURED &&
-window.supabase &&
-typeof window.supabase.createClient === "function"
-){
+const loader =
+  $("#loader");
 
-supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY,
-{
-auth:{
-autoRefreshToken:true,
-persistSession:true,
-detectSessionInUrl:true
-}
-}
-);
+const loaderProgress =
+  $("#loaderProgress");
 
-}
+const app =
+  $("#app");
+
+const book =
+  $("#book");
+
+const emptyState =
+  $("#emptyState");
+
+const currentPage =
+  $("#currentPage");
+
+const totalPages =
+  $("#totalPages");
+
+const thumbStrip =
+  $("#thumbStrip");
+
+const prevButton =
+  $("#prevButton");
+
+const nextButton =
+  $("#nextButton");
+
+const adminModal =
+  $("#adminModal");
+
+const loginView =
+  $("#loginView");
+
+const dashboardView =
+  $("#dashboardView");
+
+const adminList =
+  $("#adminList");
+
+const toast =
+  $("#toast");
 
 
 /* =========================================================
-STATE
+   SAFE LOADER
 ========================================================= */
 
-let pages = [];
-let adminPages = [];
-let current = 0;
-let busy = false;
+let loaderFinished = false;
+
+function setProgress(value) {
+
+  loaderProgress.style.width =
+    `${Math.max(0,Math.min(100,value))}%`;
+
+}
+
+function finishLoader() {
+
+  if (loaderFinished) {
+    return;
+  }
+
+  loaderFinished = true;
+
+  setProgress(100);
+
+  setTimeout(() => {
+
+    loader.classList.add("hidden");
+
+    app.classList.add("ready");
+
+  },250);
+
+}
 
 
 /* =========================================================
-HELPER
+   TOAST
 ========================================================= */
 
-const $ = s =>
-document.querySelector(s);
+let toastTimer = null;
+
+function showToast(
+  message,
+  type = ""
+) {
+
+  toast.textContent =
+    message;
+
+  toast.className =
+    "";
+
+  toast.classList.add("show");
+
+  if (type) {
+    toast.classList.add(type);
+  }
+
+  clearTimeout(toastTimer);
+
+  toastTimer =
+    setTimeout(() => {
+
+      toast.classList.remove(
+        "show"
+      );
+
+    },3200);
+}
 
 
 /* =========================================================
-ELEMENTS
+   MANIFEST LOADING
 ========================================================= */
 
-const loader = $("#loader");
-const book = $("#book");
-const empty = $("#empty");
-const counter = $("#counter");
-const prev = $("#prev");
-const next = $("#next");
-const progress = $("#progress");
-const thumbs = $("#thumbs");
-const thumbList = $("#thumbList");
-const zoom = $("#zoom");
-const zoomImage = $("#zoomImage");
-const toast = $("#toast");
-const loginOverlay = $("#loginOverlay");
-const adminOverlay = $("#adminOverlay");
-const loginForm = $("#loginForm");
-const email = $("#email");
-const password = $("#password");
-const adminList = $("#adminList");
-const pageCount = $("#pageCount");
-const file = $("#file");
-const upload = $("#upload");
+async function loadManifest() {
+
+  setProgress(15);
+
+  try {
+
+    const response =
+      await fetch(
+        `${CONFIG.manifest}?v=${Date.now()}`,
+        {
+          cache: "no-store"
+        }
+      );
+
+    setProgress(45);
+
+    if (!response.ok) {
+
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+
+    }
+
+    const data =
+      await response.json();
+
+    setProgress(70);
+
+    if (
+      !data ||
+      !Array.isArray(data.pages)
+    ) {
+
+      throw new Error(
+        "Invalid manifest"
+      );
+
+    }
+
+    state.pages =
+      data.pages.map(
+        (page,index) => {
+
+          if (typeof page === "string") {
+
+            return {
+              id: index + 1,
+              src: page,
+              title:
+                `Page ${index + 1}`
+            };
+
+          }
+
+          return {
+
+            id:
+              page.id ??
+              index + 1,
+
+            src:
+              page.src,
+
+            title:
+              page.title ??
+              `Page ${index + 1}`
+
+          };
+
+        }
+      );
+
+    if (data.title) {
+
+      CONFIG.title =
+        data.title;
+
+      $("#brandTitle").textContent =
+        data.title;
+
+      document.title =
+        data.title;
+
+    }
+
+    setProgress(90);
+
+  } catch (error) {
+
+    /*
+      Sangat penting:
+
+      Jika pages.json tidak ada / gagal,
+      aplikasi TIDAK akan loading selamanya.
+    */
+
+    console.warn(
+      "Manifest unavailable:",
+      error
+    );
+
+    state.pages = [];
+
+    setProgress(90);
+
+  }
+
+}
 
 
 /* =========================================================
-TOAST
+   RENDER BOOK
 ========================================================= */
 
-let toastTimer;
+function renderBook() {
 
-function showToast(message){
+  book.innerHTML = "";
 
-toast.textContent = message;
+  if (!state.pages.length) {
 
-toast.classList.add("show");
+    emptyState.style.display =
+      "grid";
 
-clearTimeout(toastTimer);
+    updateCounter();
 
-toastTimer =
-setTimeout(
-()=>{
-toast.classList.remove("show");
-},
-2800
-);
+    return;
+
+  }
+
+  emptyState.style.display =
+    "none";
+
+  state.pages.forEach(
+    (page,index) => {
+
+      const el =
+        document.createElement("div");
+
+      el.className =
+        "page";
+
+      el.dataset.index =
+        index;
+
+      const img =
+        document.createElement("img");
+
+      img.src =
+        page.src;
+
+      img.alt =
+        page.title ||
+        `Page ${index + 1}`;
+
+      img.loading =
+        index < 2
+          ? "eager"
+          : "lazy";
+
+      img.decoding =
+        "async";
+
+      img.draggable =
+        false;
+
+      el.appendChild(img);
+
+      const shadow =
+        document.createElement("div");
+
+      shadow.className =
+        "page-shadow";
+
+      el.appendChild(shadow);
+
+      book.appendChild(el);
+
+    }
+  );
+
+  updateBook();
 
 }
 
 
 /* =========================================================
-PUBLIC DATA
+   UPDATE BOOK
 ========================================================= */
 
-async function loadPages(){
+function updateBook() {
 
-if(!supabaseClient){
+  const pages =
+    [...book.querySelectorAll(".page")];
 
-pages = [];
+  pages.forEach(
+    (page,index) => {
 
-render();
+      page.classList.remove(
+        "active",
+        "turned",
+        "next"
+      );
 
-return;
+      if (index < state.current) {
 
-}
+        page.classList.add(
+          "turned"
+        );
 
-try{
+      }
 
-const result =
-await Promise.race([
+      else if (
+        index === state.current
+      ) {
 
-supabaseClient
-.from("ebook_pages")
-.select(
-"id,title,image_url,page_order"
-)
-.eq("published",true)
-.order(
-"page_order",
-{ascending:true}
-),
+        page.classList.add(
+          "active"
+        );
 
-new Promise(
-(_,reject)=>
-setTimeout(
-()=>{
-reject(
-new Error("timeout")
-)
-},
-8000
-)
-)
+      }
 
-]);
+      else {
 
-if(result.error){
+        page.classList.add(
+          "next"
+        );
 
-throw result.error;
+      }
 
-}
+    }
+  );
 
-pages =
-result.data || [];
+  updateCounter();
 
-if(current >= pages.length){
+  updateButtons();
 
-current =
-Math.max(
-0,
-pages.length - 1
-);
-
-}
-
-render();
-
-}catch(error){
-
-console.error(
-"PUBLIC LOAD:",
-error
-);
-
-pages = [];
-
-render();
-
-showToast(
-"Belum tersambung ke database."
-);
-
-}
+  updateThumbnails();
 
 }
 
 
 /* =========================================================
-RENDER
+   COUNTER
 ========================================================= */
 
-function render(){
+function updateCounter() {
 
-book.innerHTML = "";
-thumbList.innerHTML = "";
+  currentPage.textContent =
+    state.pages.length
+      ? state.current + 1
+      : 0;
 
-if(!pages.length){
-
-empty.classList.add("show");
-
-counter.textContent = "0 / 0";
-
-prev.disabled = true;
-next.disabled = true;
-
-progress.style.width = "0%";
-
-return;
-
-}
-
-empty.classList.remove("show");
-
-pages.forEach(
-(page,index)=>{
-
-const article =
-document.createElement("article");
-
-article.className =
-"page";
-
-if(index === current){
-
-article.classList.add("active");
-
-}
-
-const image =
-document.createElement("img");
-
-image.src =
-page.image_url;
-
-image.alt =
-page.title ||
-`Page ${index + 1}`;
-
-image.loading =
-index === current
-? "eager"
-: "lazy";
-
-image.decoding = "async";
-
-image.draggable = false;
-
-image.addEventListener(
-"dblclick",
-()=>{
-openZoom(
-page.image_url
-);
-}
-);
-
-article.appendChild(image);
-
-book.appendChild(article);
-
-
-/* THUMB */
-
-const thumb =
-document.createElement("button");
-
-thumb.className =
-"thumb";
-
-if(index === current){
-
-thumb.classList.add("active");
-
-}
-
-const thumbImg =
-document.createElement("img");
-
-thumbImg.src =
-page.image_url;
-
-thumbImg.alt = "";
-
-thumb.appendChild(thumbImg);
-
-thumb.addEventListener(
-"click",
-()=>{
-go(index);
-}
-);
-
-thumbList.appendChild(thumb);
-
-}
-);
-
-updateNav();
+  totalPages.textContent =
+    state.pages.length;
 
 }
 
 
 /* =========================================================
-NAVIGATION
+   BUTTON STATES
 ========================================================= */
 
-function updateNav(){
+function updateButtons() {
 
-const total =
-pages.length;
+  const disabled =
+    !state.pages.length;
 
-counter.textContent =
-total
-? `${current + 1} / ${total}`
-: "0 / 0";
+  prevButton.disabled =
+    disabled ||
+    state.current <= 0;
 
-prev.disabled =
-current <= 0;
-
-next.disabled =
-current >= total - 1;
-
-let percent = 0;
-
-if(total === 1){
-
-percent = 100;
-
-}else if(total > 1){
-
-percent =
-current /
-(total - 1) *
-100;
-
-}
-
-progress.style.width =
-percent + "%";
-
-[...thumbList.children]
-.forEach(
-(t,i)=>{
-t.classList.toggle(
-"active",
-i === current
-);
-}
-);
+  nextButton.disabled =
+    disabled ||
+    state.current >=
+      state.pages.length - 1;
 
 }
 
 
 /* =========================================================
-GO
+   THUMBNAILS
 ========================================================= */
 
-function go(target){
+function updateThumbnails() {
 
-if(
-busy ||
-target < 0 ||
-target >= pages.length ||
-target === current
-){
+  thumbStrip.innerHTML = "";
 
-return;
+  state.pages.forEach(
+    (page,index) => {
 
-}
+      const button =
+        document.createElement("button");
 
-const old =
-book.children[current];
+      button.className =
+        "thumb";
 
-const incoming =
-book.children[target];
+      if (
+        index === state.current
+      ) {
 
-if(!old || !incoming){
+        button.classList.add(
+          "active"
+        );
 
-return;
+      }
 
-}
+      const img =
+        document.createElement("img");
 
-busy = true;
+      img.src =
+        page.src;
 
-const forward =
-target > current;
+      img.alt =
+        "";
 
-incoming.classList.add(
-forward
-? "enter-right"
-: "enter-left"
-);
+      button.appendChild(img);
 
-incoming.style.opacity = "0";
+      button.addEventListener(
+        "click",
+        () => goToPage(index)
+      );
 
-requestAnimationFrame(
-()=>{
+      thumbStrip.appendChild(
+        button
+      );
 
-old.classList.remove("active");
-
-incoming.classList.add("active");
-
-incoming.style.opacity = "";
-
-incoming.classList.remove(
-forward
-? "enter-right"
-: "enter-left"
-);
-
-}
-);
-
-current = target;
-
-setTimeout(
-()=>{
-busy = false;
-updateNav();
-},
-650
-);
+    }
+  );
 
 }
 
 
 /* =========================================================
-BUTTONS
+   NAVIGATION
 ========================================================= */
 
-prev.onclick =
-()=>go(current - 1);
+function goToPage(index) {
 
-next.onclick =
-()=>go(current + 1);
+  if (!state.pages.length) {
+    return;
+  }
+
+  const max =
+    state.pages.length - 1;
+
+  state.current =
+    Math.max(
+      0,
+      Math.min(
+        index,
+        max
+      )
+    );
+
+  updateBook();
+
+}
+
+
+function nextPage() {
+
+  if (
+    state.current <
+    state.pages.length - 1
+  ) {
+
+    state.current++;
+
+    updateBook();
+
+  }
+
+}
+
+
+function previousPage() {
+
+  if (
+    state.current > 0
+  ) {
+
+    state.current--;
+
+    updateBook();
+
+  }
+
+}
 
 
 /* =========================================================
-KEYBOARD
+   IMAGE ZOOM
+========================================================= */
+
+function openZoom() {
+
+  if (!state.pages.length) {
+    return;
+  }
+
+  const page =
+    state.pages[state.current];
+
+  if (!page) {
+    return;
+  }
+
+  $("#zoomImage").src =
+    page.src;
+
+  $("#zoomLayer")
+    .classList.add(
+      "visible"
+    );
+
+}
+
+function closeZoom() {
+
+  $("#zoomLayer")
+    .classList.remove(
+      "visible"
+    );
+
+}
+
+
+/* =========================================================
+   FULLSCREEN
+========================================================= */
+
+async function toggleFullscreen() {
+
+  try {
+
+    if (!document.fullscreenElement) {
+
+      await document.documentElement
+        .requestFullscreen();
+
+    } else {
+
+      await document.exitFullscreen();
+
+    }
+
+  } catch (error) {
+
+    showToast(
+      "Fullscreen tidak didukung browser ini.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+function openAdmin() {
+
+  adminModal.classList.add(
+    "open"
+  );
+
+  if (
+    state.github.token
+  ) {
+
+    showDashboard();
+
+  } else {
+
+    showLogin();
+
+  }
+
+}
+
+function closeAdmin() {
+
+  adminModal.classList.remove(
+    "open"
+  );
+
+}
+
+function showLogin() {
+
+  $("#adminModalTitle").textContent =
+    "Admin Access";
+
+  loginView.style.display =
+    "block";
+
+  dashboardView.style.display =
+    "none";
+
+}
+
+function showDashboard() {
+
+  $("#adminModalTitle").textContent =
+    "Content Manager";
+
+  loginView.style.display =
+    "none";
+
+  dashboardView.style.display =
+    "block";
+
+  renderAdminList();
+
+}
+
+
+/* =========================================================
+   GITHUB AUTH
+========================================================= */
+
+async function connectGitHub() {
+
+  if (state.busy) {
+    return;
+  }
+
+  const owner =
+    $("#githubOwner")
+      .value
+      .trim();
+
+  const repo =
+    $("#githubRepo")
+      .value
+      .trim();
+
+  const token =
+    $("#githubToken")
+      .value
+      .trim();
+
+  if (!owner || !repo || !token) {
+
+    showToast(
+      "Owner, repository, dan token wajib diisi.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  state.busy = true;
+
+  const button =
+    $("#loginButton");
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "CONNECTING...";
+
+  try {
+
+    const response =
+      await githubRequest(
+        `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+        {
+          method: "GET",
+          token
+        }
+      );
+
+    if (!response.ok) {
+
+      throw new Error(
+        "GitHub authentication failed"
+      );
+
+    }
+
+    state.github.owner =
+      owner;
+
+    state.github.repo =
+      repo;
+
+    state.github.token =
+      token;
+
+    showDashboard();
+
+    showToast(
+      "GitHub berhasil terhubung.",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Gagal terhubung ke GitHub. Periksa token, owner, repo, dan permission.",
+      "error"
+    );
+
+  } finally {
+
+    state.busy =
+      false;
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "CONNECT TO GITHUB";
+
+  }
+
+}
+
+
+/* =========================================================
+   GITHUB REQUEST
+========================================================= */
+
+async function githubRequest(
+  url,
+  options = {}
+) {
+
+  const headers = {
+
+    "Accept":
+      "application/vnd.github+json",
+
+    "X-GitHub-Api-Version":
+      "2022-11-28"
+
+  };
+
+  if (options.token) {
+
+    headers.Authorization =
+      `Bearer ${options.token}`;
+
+  }
+
+  if (
+    options.body
+  ) {
+
+    headers["Content-Type"] =
+      "application/json";
+
+  }
+
+  return fetch(
+    url,
+    {
+      ...options,
+      headers
+    }
+  );
+
+}
+
+
+/* =========================================================
+   GITHUB CONTENT GET
+========================================================= */
+
+async function getGitHubFile(
+  path
+) {
+
+  const {
+    owner,
+    repo,
+    token,
+    branch
+  } =
+    state.github;
+
+  const url =
+    `https://api.github.com/repos/` +
+    `${encodeURIComponent(owner)}/` +
+    `${encodeURIComponent(repo)}/` +
+    `contents/${path}?ref=${encodeURIComponent(branch)}`;
+
+  const response =
+    await githubRequest(
+      url,
+      {
+        method: "GET",
+        token
+      }
+    );
+
+  if (
+    response.status === 404
+  ) {
+
+    return null;
+
+  }
+
+  if (!response.ok) {
+
+    throw new Error(
+      `GitHub GET ${response.status}`
+    );
+
+  }
+
+  return response.json();
+
+}
+
+
+/* =========================================================
+   BASE64
+========================================================= */
+
+function arrayBufferToBase64(
+  buffer
+) {
+
+  const bytes =
+    new Uint8Array(buffer);
+
+  const chunkSize =
+    0x8000;
+
+  let binary = "";
+
+  for (
+    let i = 0;
+    i < bytes.length;
+    i += chunkSize
+  ) {
+
+    const chunk =
+      bytes.subarray(
+        i,
+        i + chunkSize
+      );
+
+    binary +=
+      String.fromCharCode(
+        ...chunk
+      );
+
+  }
+
+  return btoa(binary);
+
+}
+
+
+/* =========================================================
+   UPLOAD FILE TO GITHUB
+========================================================= */
+
+async function uploadFileToGitHub(
+  path,
+  file,
+  message
+) {
+
+  const {
+    owner,
+    repo,
+    token,
+    branch
+  } =
+    state.github;
+
+  const buffer =
+    await file.arrayBuffer();
+
+  const content =
+    arrayBufferToBase64(
+      buffer
+    );
+
+  const url =
+    `https://api.github.com/repos/` +
+    `${encodeURIComponent(owner)}/` +
+    `${encodeURIComponent(repo)}/` +
+    `contents/${path}`;
+
+  const existing =
+    await getGitHubFile(
+      path
+    );
+
+  const body = {
+
+    message,
+
+    content,
+
+    branch
+
+  };
+
+  if (existing?.sha) {
+
+    body.sha =
+      existing.sha;
+
+  }
+
+  const response =
+    await githubRequest(
+      url,
+      {
+
+        method: "PUT",
+
+        token,
+
+        body:
+          JSON.stringify(body)
+
+      }
+    );
+
+  if (!response.ok) {
+
+    const text =
+      await response.text();
+
+    throw new Error(
+      `Upload failed: ${response.status} ${text}`
+    );
+
+  }
+
+  return response.json();
+
+}
+
+
+/* =========================================================
+   UPLOAD TEXT FILE
+========================================================= */
+
+async function uploadTextToGitHub(
+  path,
+  text,
+  message
+) {
+
+  const {
+    owner,
+    repo,
+    token,
+    branch
+  } =
+    state.github;
+
+  const bytes =
+    new TextEncoder()
+      .encode(text);
+
+  const content =
+    arrayBufferToBase64(
+      bytes.buffer
+    );
+
+  const url =
+    `https://api.github.com/repos/` +
+    `${encodeURIComponent(owner)}/` +
+    `${encodeURIComponent(repo)}/` +
+    `contents/${path}`;
+
+  const existing =
+    await getGitHubFile(
+      path
+    );
+
+  const body = {
+
+    message,
+
+    content,
+
+    branch
+
+  };
+
+  if (existing?.sha) {
+
+    body.sha =
+      existing.sha;
+
+  }
+
+  const response =
+    await githubRequest(
+      url,
+      {
+
+        method: "PUT",
+
+        token,
+
+        body:
+          JSON.stringify(body)
+
+      }
+    );
+
+  if (!response.ok) {
+
+    const text =
+      await response.text();
+
+    throw new Error(
+      `Manifest upload failed: ${response.status} ${text}`
+    );
+
+  }
+
+  return response.json();
+
+}
+
+
+/* =========================================================
+   FILE SELECTION
+========================================================= */
+
+function validateImage(
+  file
+) {
+
+  if (
+    !CONFIG.acceptedTypes
+      .includes(file.type)
+  ) {
+
+    return {
+      valid: false,
+      reason:
+        "Format gambar tidak didukung."
+    };
+
+  }
+
+  const max =
+    CONFIG.maxImageSizeMB *
+    1024 *
+    1024;
+
+  if (
+    file.size > max
+  ) {
+
+    return {
+      valid: false,
+      reason:
+        `Ukuran ${file.name} lebih dari ${CONFIG.maxImageSizeMB} MB.`
+    };
+
+  }
+
+  return {
+    valid: true
+  };
+
+}
+
+
+/* =========================================================
+   ADD LOCAL IMAGES
+========================================================= */
+
+async function addImages(
+  fileList
+) {
+
+  const files =
+    [...fileList];
+
+  if (!files.length) {
+    return;
+  }
+
+  let added = 0;
+
+  for (const file of files) {
+
+    const validation =
+      validateImage(file);
+
+    if (!validation.valid) {
+
+      showToast(
+        validation.reason,
+        "error"
+      );
+
+      continue;
+
+    }
+
+    const localUrl =
+      URL.createObjectURL(
+        file
+      );
+
+    state.pages.push({
+
+      id:
+        Date.now() +
+        Math.random(),
+
+      src:
+        localUrl,
+
+      title:
+        file.name,
+
+      file,
+
+      pending:
+        true
+
+    });
+
+    added++;
+
+  }
+
+  if (added) {
+
+    state.localChanges =
+      true;
+
+    state.current =
+      Math.max(
+        0,
+        state.pages.length - added
+      );
+
+    renderBook();
+
+    renderAdminList();
+
+    showToast(
+      `${added} halaman ditambahkan. Tekan PUBLISH untuk membuatnya publik.`,
+      "success"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN LIST
+========================================================= */
+
+function renderAdminList() {
+
+  adminList.innerHTML = "";
+
+  if (!state.pages.length) {
+
+    const empty =
+      document.createElement("div");
+
+    empty.className =
+      "help";
+
+    empty.textContent =
+      "Belum ada halaman.";
+
+    adminList.appendChild(
+      empty
+    );
+
+    return;
+
+  }
+
+  state.pages.forEach(
+    (page,index) => {
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "admin-item";
+
+      const thumb =
+        document.createElement("div");
+
+      thumb.className =
+        "admin-thumb";
+
+      const img =
+        document.createElement("img");
+
+      img.src =
+        page.src;
+
+      thumb.appendChild(
+        img
+      );
+
+
+      const info =
+        document.createElement("div");
+
+      const name =
+        document.createElement("div");
+
+      name.className =
+        "admin-name";
+
+      name.textContent =
+        page.title ||
+        `Page ${index + 1}`;
+
+      const meta =
+        document.createElement("div");
+
+      meta.className =
+        "admin-meta";
+
+      meta.textContent =
+        page.pending
+          ? "PENDING UPLOAD"
+          : `PAGE ${String(index + 1).padStart(3,"0")}`;
+
+      info.appendChild(
+        name
+      );
+
+      info.appendChild(
+        meta
+      );
+
+
+      const actions =
+        document.createElement("div");
+
+      actions.className =
+        "item-actions";
+
+
+      const up =
+        document.createElement("button");
+
+      up.className =
+        "small-btn";
+
+      up.textContent =
+        "↑";
+
+      up.title =
+        "Move up";
+
+      up.onclick =
+        () => movePage(
+          index,
+          -1
+        );
+
+
+      const down =
+        document.createElement("button");
+
+      down.className =
+        "small-btn";
+
+      down.textContent =
+        "↓";
+
+      down.title =
+        "Move down";
+
+      down.onclick =
+        () => movePage(
+          index,
+          1
+        );
+
+
+      const remove =
+        document.createElement("button");
+
+      remove.className =
+        "small-btn danger";
+
+      remove.textContent =
+        "×";
+
+      remove.title =
+        "Remove";
+
+      remove.onclick =
+        () => removePage(
+          index
+        );
+
+
+      actions.appendChild(
+        up
+      );
+
+      actions.appendChild(
+        down
+      );
+
+      actions.appendChild(
+        remove
+      );
+
+
+      item.appendChild(
+        thumb
+      );
+
+      item.appendChild(
+        info
+      );
+
+      item.appendChild(
+        actions
+      );
+
+      adminList.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MOVE PAGE
+========================================================= */
+
+function movePage(
+  index,
+  direction
+) {
+
+  const target =
+    index + direction;
+
+  if (
+    target < 0 ||
+    target >= state.pages.length
+  ) {
+
+    return;
+
+  }
+
+  [
+    state.pages[index],
+    state.pages[target]
+  ] =
+  [
+    state.pages[target],
+    state.pages[index]
+  ];
+
+  state.localChanges =
+    true;
+
+  state.current =
+    target;
+
+  renderBook();
+
+  renderAdminList();
+
+}
+
+
+/* =========================================================
+   REMOVE PAGE
+========================================================= */
+
+function removePage(
+  index
+) {
+
+  const page =
+    state.pages[index];
+
+  if (!page) {
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      `Hapus "${page.title || `Page ${index + 1}`}"?`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  if (page.pending &&
+      page.src.startsWith("blob:")) {
+
+    URL.revokeObjectURL(
+      page.src
+    );
+
+  }
+
+  state.pages.splice(
+    index,
+    1
+  );
+
+  state.localChanges =
+    true;
+
+  state.current =
+    Math.min(
+      state.current,
+      Math.max(
+        0,
+        state.pages.length - 1
+      )
+    );
+
+  renderBook();
+
+  renderAdminList();
+
+}
+
+
+/* =========================================================
+   NORMALIZE FILENAME
+========================================================= */
+
+function slugifyFilename(
+  filename
+) {
+
+  const ext =
+    filename
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+  const base =
+    filename
+      .replace(
+        /\.[^/.]+$/,
+        ""
+      )
+      .toLowerCase()
+      .replace(
+        /[^a-z0-9]+/g,
+        "-"
+      )
+      .replace(
+        /^-+|-+$/g,
+        ""
+      )
+      .slice(
+        0,
+        60
+      );
+
+  return (
+    base ||
+    "page"
+  ) +
+  "." +
+  ext;
+
+}
+
+
+/* =========================================================
+   UNIQUE PAGE PATH
+========================================================= */
+
+function pageFilename(
+  index,
+  originalName
+) {
+
+  const ext =
+    originalName
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+  return (
+    CONFIG.pagesFolder +
+    "/" +
+    "page-" +
+    String(index + 1)
+      .padStart(3,"0") +
+    "." +
+    ext
+  );
+
+}
+
+
+/* =========================================================
+   PUBLISH
+========================================================= */
+
+async function publishChanges() {
+
+  if (state.busy) {
+    return;
+  }
+
+  if (!state.github.token) {
+
+    showToast(
+      "Hubungkan GitHub terlebih dahulu.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if (!state.pages.length) {
+
+    showToast(
+      "Tidak ada halaman untuk dipublish.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  const confirmed =
+    confirm(
+      "Publish semua perubahan ke GitHub sekarang?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  state.busy =
+    true;
+
+  const button =
+    $("#publishButton");
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "PUBLISHING...";
+
+  try {
+
+    /*
+      1. Upload pending images
+    */
+
+    for (
+      let i = 0;
+      i < state.pages.length;
+      i++
+    ) {
+
+      const page =
+        state.pages[i];
+
+      if (
+        page.pending &&
+        page.file
+      ) {
+
+        button.textContent =
+          `UPLOAD ${i + 1}/${state.pages.length}`;
+
+        const path =
+          pageFilename(
+            i,
+            page.file.name
+          );
+
+        await uploadFileToGitHub(
+          path,
+          page.file,
+          `Add page ${i + 1}`
+        );
+
+        page.src =
+          `${CONFIG.pagesFolder}/` +
+          path.split("/").pop();
+
+        page.pending =
+          false;
+
+        delete page.file;
+
+        /*
+          Browser blob no longer needed.
+        */
+
+        if (
+          page.src.startsWith("blob:")
+        ) {
+
+          URL.revokeObjectURL(
+            page.src
+          );
+
+        }
+
+      }
+
+    }
+
+
+    /*
+      2. Build manifest
+    */
+
+    const manifest = {
+
+      version:
+        Date.now(),
+
+      title:
+        CONFIG.title,
+
+      updatedAt:
+        new Date().toISOString(),
+
+      pages:
+        state.pages.map(
+          (page,index) => ({
+
+            id:
+              index + 1,
+
+            src:
+              page.src,
+
+            title:
+              page.title ||
+              `Page ${index + 1}`
+
+          })
+        )
+
+    };
+
+
+    /*
+      3. Save pages.json
+    */
+
+    button.textContent =
+      "UPDATING MANIFEST...";
+
+    await uploadTextToGitHub(
+      CONFIG.manifest,
+      JSON.stringify(
+        manifest,
+        null,
+        2
+      ),
+      "Update publication manifest"
+    );
+
+
+    /*
+      4. Update local state
+    */
+
+    state.localChanges =
+      false;
+
+    showToast(
+      "Publish berhasil. GitHub Pages akan memperbarui situs.",
+      "success"
+    );
+
+    /*
+      Give GitHub Pages some time.
+    */
+
+    setTimeout(() => {
+
+      location.reload();
+
+    },2200);
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Publish gagal. Lihat Console untuk detail.",
+      "error"
+    );
+
+  } finally {
+
+    state.busy =
+      false;
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "↑ PUBLISH";
+
+  }
+
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+async function refreshAdmin() {
+
+  if (
+    state.localChanges
+  ) {
+
+    const confirmed =
+      confirm(
+        "Ada perubahan yang belum dipublish. Refresh akan membuang perubahan lokal. Lanjut?"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+  }
+
+  closeAdmin();
+
+  state.current =
+    0;
+
+  await loadManifest();
+
+  renderBook();
+
+  finishLoader();
+
+  openAdmin();
+
+  showToast(
+    "Data diperbarui."
+  );
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+
+  state.github.owner =
+    "";
+
+  state.github.repo =
+    "";
+
+  state.github.token =
+    "";
+
+  $("#githubToken").value =
+    "";
+
+  showLogin();
+
+  showToast(
+    "Disconnected."
+  );
+
+}
+
+
+/* =========================================================
+   KEYBOARD
 ========================================================= */
 
 document.addEventListener(
-"keydown",
-e=>{
+  "keydown",
+  event => {
 
-if(e.key === "ArrowLeft"){
+    if (
+      event.key === "ArrowRight" ||
+      event.key === "PageDown"
+    ) {
 
-go(current - 1);
+      nextPage();
 
-}
+    }
 
-if(e.key === "ArrowRight"){
+    if (
+      event.key === "ArrowLeft" ||
+      event.key === "PageUp"
+    ) {
 
-go(current + 1);
+      previousPage();
 
-}
+    }
 
-if(e.key === "Escape"){
+    if (
+      event.key === "Escape"
+    ) {
 
-closeAll();
+      closeZoom();
 
-}
+      closeAdmin();
 
-}
+    }
+
+    if (
+      event.key === "f" ||
+      event.key === "F"
+    ) {
+
+      toggleFullscreen();
+
+    }
+
+    if (
+      event.key === "+" ||
+      event.key === "="
+    ) {
+
+      openZoom();
+
+    }
+
+  }
 );
 
 
 /* =========================================================
-SWIPE
+   TOUCH / SWIPE
 ========================================================= */
 
-let sx = null;
-let sy = null;
-
 book.addEventListener(
-"touchstart",
-e=>{
+  "touchstart",
+  event => {
 
-const t =
-e.changedTouches[0];
+    const touch =
+      event.changedTouches[0];
 
-sx = t.clientX;
-sy = t.clientY;
+    state.touch.x =
+      touch.clientX;
 
-},
-{passive:true}
+    state.touch.y =
+      touch.clientY;
+
+  },
+  {
+    passive: true
+  }
 );
 
 book.addEventListener(
-"touchend",
-e=>{
+  "touchend",
+  event => {
 
-if(sx === null){
+    const touch =
+      event.changedTouches[0];
 
-return;
+    const dx =
+      touch.clientX -
+      state.touch.x;
 
-}
+    const dy =
+      touch.clientY -
+      state.touch.y;
 
-const t =
-e.changedTouches[0];
+    if (
+      Math.abs(dx) >
+      50 &&
+      Math.abs(dx) >
+      Math.abs(dy)
+    ) {
 
-const dx =
-t.clientX - sx;
+      if (dx < 0) {
 
-const dy =
-t.clientY - sy;
+        nextPage();
 
-sx = null;
-sy = null;
+      } else {
 
-if(
-Math.abs(dx) < 45 ||
-Math.abs(dx) < Math.abs(dy)
-){
+        previousPage();
 
-return;
+      }
 
-}
+    }
 
-if(dx < 0){
-
-go(current + 1);
-
-}else{
-
-go(current - 1);
-
-}
-
-},
-{passive:true}
+  },
+  {
+    passive: true
+  }
 );
 
 
 /* =========================================================
-THUMB PANEL
+   CLICK BOOK
+========================================================= */
+
+book.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target.tagName ===
+      "IMG"
+    ) {
+
+      openZoom();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+prevButton.onclick =
+  previousPage;
+
+nextButton.onclick =
+  nextPage;
+
+$("#zoomButton").onclick =
+  openZoom;
+
+$("#fullscreenButton").onclick =
+  toggleFullscreen;
+
+$("#adminButton").onclick =
+  openAdmin;
+
+$("#closeAdmin").onclick =
+  closeAdmin;
+
+$("#loginButton").onclick =
+  connectGitHub;
+
+$("#addImagesButton").onclick =
+  () =>
+    $("#imageInput").click();
+
+$("#publishButton").onclick =
+  publishChanges;
+
+$("#refreshAdminButton").onclick =
+  refreshAdmin;
+
+$("#logoutButton").onclick =
+  logout;
+
+$("#zoomLayer").onclick =
+  closeZoom;
+
+
+/* =========================================================
+   THUMBNAIL BUTTON
 ========================================================= */
 
 $("#thumbButton").onclick =
-()=>{
-thumbs.classList.toggle("open");
-};
+  () => {
+
+    thumbStrip.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
+
+  };
 
 
 /* =========================================================
-FULLSCREEN
+   HELP
 ========================================================= */
 
-$("#fullButton").onclick =
-async()=>{
+$("#helpButton").onclick =
+  () => {
 
-try{
+    showToast(
+      "← → navigasi · F fullscreen · + zoom · swipe di HP"
+    );
 
-if(!document.fullscreenElement){
-
-await document.documentElement
-.requestFullscreen();
-
-}else{
-
-await document.exitFullscreen();
-
-}
-
-}catch(error){
-
-console.error(error);
-
-}
-
-};
+  };
 
 
 /* =========================================================
-ZOOM
+   IMAGE INPUT
 ========================================================= */
 
-function openZoom(url){
+$("#imageInput").addEventListener(
+  "change",
+  event => {
 
-zoomImage.src = url;
+    addImages(
+      event.target.files
+    );
 
-zoomImage.classList.remove("big");
+    event.target.value =
+      "";
 
-zoom.classList.add("open");
-
-}
-
-$("#closeZoom").onclick =
-()=>{
-zoom.classList.remove("open");
-};
-
-zoomImage.onclick =
-()=>{
-zoomImage.classList.toggle("big");
-};
-
-
-/* =========================================================
-SESSION
-========================================================= */
-
-async function getSession(){
-
-if(!supabaseClient){
-
-return null;
-
-}
-
-try{
-
-const result =
-await supabaseClient.auth.getSession();
-
-return result.data.session;
-
-}catch(error){
-
-console.error(error);
-
-return null;
-
-}
-
-}
-
-
-/* =========================================================
-ADMIN BUTTON
-========================================================= */
-
-$("#adminButton").onclick =
-async()=>{
-
-if(!CONFIGURED){
-
-showToast(
-"Supabase belum dikonfigurasi."
+  }
 );
 
-return;
-
-}
-
-const session =
-await getSession();
-
-if(session){
-
-openAdmin();
-
-}else{
-
-loginOverlay.classList.add("open");
-
-setTimeout(
-()=>email.focus(),
-100
-);
-
-}
-
-};
-
 
 /* =========================================================
-LOGIN
+   DROP ZONE
 ========================================================= */
 
-loginForm.onsubmit =
-async e=>{
+const dropZone =
+  $("#dropZone");
 
-e.preventDefault();
+dropZone.addEventListener(
+  "click",
+  event => {
 
-if(!supabaseClient){
+    if (
+      event.target ===
+      $("#imageInput")
+    ) {
 
-return;
+      return;
 
-}
+    }
 
-const submit =
-$("#loginSubmit");
+    $("#imageInput").click();
 
-submit.disabled = true;
-
-submit.textContent =
-"Signing in...";
-
-try{
-
-const result =
-await supabaseClient.auth
-.signInWithPassword({
-email:email.value.trim(),
-password:password.value
-});
-
-if(result.error){
-
-throw result.error;
-
-}
-
-password.value = "";
-
-loginOverlay.classList.remove("open");
-
-await openAdmin();
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Login gagal."
-);
-
-}finally{
-
-submit.disabled = false;
-
-submit.textContent =
-"Login";
-
-}
-
-};
-
-
-/* =========================================================
-CANCEL LOGIN
-========================================================= */
-
-$("#cancelLogin").onclick =
-()=>{
-loginOverlay.classList.remove("open");
-};
-
-
-/* =========================================================
-OPEN ADMIN
-========================================================= */
-
-async function openAdmin(){
-
-const session =
-await getSession();
-
-if(!session){
-
-loginOverlay.classList.add("open");
-
-return;
-
-}
-
-adminOverlay.classList.add("open");
-
-await loadAdmin();
-
-}
-
-
-/* =========================================================
-ADMIN DATA
-========================================================= */
-
-async function loadAdmin(){
-
-if(!supabaseClient){
-
-return;
-
-}
-
-try{
-
-const result =
-await supabaseClient
-.from("ebook_pages")
-.select("*")
-.order(
-"page_order",
-{ascending:true}
-);
-
-if(result.error){
-
-throw result.error;
-
-}
-
-adminPages =
-result.data || [];
-
-renderAdmin();
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Tidak dapat memuat Admin."
-);
-
-}
-
-}
-
-
-/* =========================================================
-ADMIN RENDER
-========================================================= */
-
-function renderAdmin(){
-
-adminList.innerHTML = "";
-
-pageCount.textContent =
-`${adminPages.length} pages`;
-
-adminPages.forEach(
-(page,index)=>{
-
-const row =
-document.createElement("article");
-
-row.className = "row";
-
-
-/* IMAGE */
-
-const imageBox =
-document.createElement("div");
-
-imageBox.className =
-"row-img";
-
-const image =
-document.createElement("img");
-
-image.src =
-page.image_url;
-
-image.loading = "lazy";
-
-imageBox.appendChild(image);
-
-
-/* INFO */
-
-const info =
-document.createElement("div");
-
-const title =
-document.createElement("div");
-
-title.className =
-"row-title";
-
-title.textContent =
-page.title ||
-`Page ${index + 1}`;
-
-const meta =
-document.createElement("div");
-
-meta.className =
-"row-meta";
-
-meta.textContent =
-`PAGE ${index + 1} · ` +
-(
-page.published
-? "PUBLISHED"
-: "DRAFT"
-);
-
-info.appendChild(title);
-info.appendChild(meta);
-
-
-/* BUTTONS */
-
-const buttons =
-document.createElement("div");
-
-buttons.className =
-"row-buttons";
-
-buttons.appendChild(
-smallButton(
-"↑",
-()=>movePage(index,-1)
-)
-);
-
-buttons.appendChild(
-smallButton(
-"↓",
-()=>movePage(index,1)
-)
-);
-
-buttons.appendChild(
-smallButton(
-page.published ? "○" : "●",
-()=>togglePage(page)
-)
-);
-
-buttons.appendChild(
-smallButton(
-"×",
-()=>deletePage(page)
-)
-);
-
-row.appendChild(imageBox);
-row.appendChild(info);
-row.appendChild(buttons);
-
-adminList.appendChild(row);
-
-}
-);
-
-}
-
-
-/* =========================================================
-SMALL BUTTON
-========================================================= */
-
-function smallButton(
-label,
-callback
-){
-
-const b =
-document.createElement("button");
-
-b.type = "button";
-
-b.className = "small";
-
-b.textContent = label;
-
-b.onclick = callback;
-
-return b;
-
-}
-
-
-/* =========================================================
-CLOSE ADMIN
-========================================================= */
-
-$("#closeAdmin").onclick =
-()=>{
-adminOverlay.classList.remove("open");
-};
-
-
-/* =========================================================
-UPLOAD CLICK
-========================================================= */
-
-upload.onclick =
-()=>{
-file.click();
-};
-
-
-/*
-Important:
-prevent label/click recursion.
-*/
-
-file.onclick =
-e=>{
-e.stopPropagation();
-};
-
-
-/* =========================================================
-DRAG
-========================================================= */
-
-[
-"dragenter",
-"dragover"
-].forEach(
-name=>{
-upload.addEventListener(
-name,
-e=>{
-e.preventDefault();
-upload.classList.add("drag");
-}
-);
-}
+  }
 );
 
 [
-"dragleave",
-"drop"
+  "dragenter",
+  "dragover"
 ].forEach(
-name=>{
-upload.addEventListener(
-name,
-e=>{
-e.preventDefault();
-upload.classList.remove("drag");
-}
+  eventName => {
+
+    dropZone.addEventListener(
+      eventName,
+      event => {
+
+        event.preventDefault();
+
+        dropZone.classList.add(
+          "drag"
+        );
+
+      }
+    );
+
+  }
 );
-}
+
+[
+  "dragleave",
+  "drop"
+].forEach(
+  eventName => {
+
+    dropZone.addEventListener(
+      eventName,
+      event => {
+
+        event.preventDefault();
+
+        dropZone.classList.remove(
+          "drag"
+        );
+
+      }
+    );
+
+  }
 );
 
-upload.addEventListener(
-"drop",
-e=>{
+dropZone.addEventListener(
+  "drop",
+  event => {
 
-const files =
-[...e.dataTransfer.files];
+    addImages(
+      event.dataTransfer.files
+    );
 
-uploadFiles(files);
-
-}
+  }
 );
 
 
 /* =========================================================
-FILE INPUT
+   CLOSE MODAL ON BACKDROP
 ========================================================= */
 
-file.addEventListener(
-"change",
-e=>{
+adminModal.addEventListener(
+  "click",
+  event => {
 
-uploadFiles(
-[...e.target.files]
-);
+    if (
+      event.target ===
+      adminModal
+    ) {
 
-file.value = "";
+      closeAdmin();
 
-}
+    }
+
+  }
 );
 
 
 /* =========================================================
-EXTENSION
+   PREVENT ACCIDENTAL CLOSE
 ========================================================= */
 
-function extension(name){
+window.addEventListener(
+  "beforeunload",
+  event => {
 
-const parts =
-name.split(".");
+    if (
+      state.localChanges
+    ) {
 
-if(parts.length < 2){
+      event.preventDefault();
 
-return "jpg";
+      event.returnValue =
+        "";
 
-}
+    }
 
-return parts.pop()
-.toLowerCase()
-.replace(/[^a-z0-9]/g,"");
-
-}
+  }
+);
 
 
 /* =========================================================
-NEXT ORDER
+   START APPLICATION
 ========================================================= */
 
-async function nextOrder(){
+async function boot() {
 
-const result =
-await supabaseClient
-.from("ebook_pages")
-.select("page_order")
-.order(
-"page_order",
-{ascending:false}
-)
-.limit(1);
+  try {
 
-if(
-result.error ||
-!result.data ||
-!result.data.length
-){
+    /*
+      Tidak ada dependency eksternal.
+      Tidak ada Firebase.
+      Tidak ada Google Fonts.
+      Tidak ada API wajib untuk membuka viewer.
+    */
 
-return 1;
+    setProgress(5);
 
-}
+    await loadManifest();
 
-return result.data[0].page_order + 1;
+    setProgress(92);
 
-}
+    renderBook();
 
+    setProgress(97);
 
-/* =========================================================
-UPLOAD FILES
-========================================================= */
+    /*
+      Safety timeout:
 
-async function uploadFiles(files){
+      Bahkan kalau browser mengalami
+      masalah tertentu, loading tidak
+      akan berputar selamanya.
+    */
 
-const session =
-await getSession();
+    setTimeout(
+      finishLoader,
+      350
+    );
 
-if(!session){
+  } catch (error) {
 
-showToast(
-"Login Admin diperlukan."
-);
+    console.error(
+      "BOOT ERROR:",
+      error
+    );
 
-return;
+    state.pages = [];
 
-}
+    renderBook();
 
-const images =
-files.filter(
-f=>f.type.startsWith("image/")
-);
+    finishLoader();
 
-if(!images.length){
-
-showToast(
-"Tidak ada gambar valid."
-);
-
-return;
-
-}
-
-showToast(
-`Mengupload ${images.length} gambar...`
-);
-
-let order =
-await nextOrder();
-
-let success = 0;
-
-for(const image of images){
-
-let path = null;
-
-try{
-
-const id =
-crypto.randomUUID();
-
-path =
-`pages/${id}.${extension(image.name)}`;
-
-
-/* STORAGE */
-
-const uploadResult =
-await supabaseClient
-.storage
-.from("ebook-images")
-.upload(
-path,
-image,
-{
-cacheControl:"31536000",
-contentType:image.type,
-upsert:false
-}
-);
-
-if(uploadResult.error){
-
-throw uploadResult.error;
-
-}
-
-
-/* URL */
-
-const url =
-supabaseClient
-.storage
-.from("ebook-images")
-.getPublicUrl(path)
-.data.publicUrl;
-
-
-/* DATABASE */
-
-const insertResult =
-await supabaseClient
-.from("ebook_pages")
-.insert({
-title:image.name,
-image_path:path,
-image_url:url,
-page_order:order,
-published:true
-});
-
-if(insertResult.error){
-
-await supabaseClient
-.storage
-.from("ebook-images")
-.remove([path]);
-
-throw insertResult.error;
-
-}
-
-order++;
-success++;
-
-}catch(error){
-
-console.error(
-"UPLOAD ERROR:",
-error
-);
-
-}
-
-}
-
-await loadAdmin();
-await loadPages();
-
-showToast(
-success
-? `${success} gambar ditambahkan.`
-: "Upload gagal."
-);
+  }
 
 }
 
 
 /* =========================================================
-MOVE PAGE
-========================================================= */
-
-async function movePage(
-index,
-direction
-){
-
-const target =
-index + direction;
-
-if(
-target < 0 ||
-target >= adminPages.length
-){
-
-return;
-
-}
-
-const a =
-adminPages[index];
-
-const b =
-adminPages[target];
-
-const temp =
--999999999;
-
-try{
-
-/* A -> TEMP */
-
-let result =
-await supabaseClient
-.from("ebook_pages")
-.update({
-page_order:temp
-})
-.eq("id",a.id);
-
-if(result.error){
-
-throw result.error;
-
-}
-
-
-/* B -> A */
-
-result =
-await supabaseClient
-.from("ebook_pages")
-.update({
-page_order:a.page_order
-})
-.eq("id",b.id);
-
-if(result.error){
-
-throw result.error;
-
-}
-
-
-/* TEMP -> B */
-
-result =
-await supabaseClient
-.from("ebook_pages")
-.update({
-page_order:b.page_order
-})
-.eq("id",a.id);
-
-if(result.error){
-
-throw result.error;
-
-}
-
-await loadAdmin();
-await loadPages();
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Gagal mengubah urutan."
-);
-
-}
-
-}
-
-
-/* =========================================================
-TOGGLE
-========================================================= */
-
-async function togglePage(page){
-
-const result =
-await supabaseClient
-.from("ebook_pages")
-.update({
-published:!page.published
-})
-.eq("id",page.id);
-
-if(result.error){
-
-console.error(result.error);
-
-showToast(
-"Gagal mengubah status."
-);
-
-return;
-
-}
-
-await loadAdmin();
-await loadPages();
-
-}
-
-
-/* =========================================================
-DELETE
-========================================================= */
-
-async function deletePage(page){
-
-if(
-!confirm(
-`Hapus "${page.title}"?`
-)
-){
-
-return;
-
-}
-
-const db =
-await supabaseClient
-.from("ebook_pages")
-.delete()
-.eq("id",page.id);
-
-if(db.error){
-
-console.error(db.error);
-
-showToast(
-"Gagal menghapus halaman."
-);
-
-return;
-
-}
-
-if(page.image_path){
-
-const storage =
-await supabaseClient
-.storage
-.from("ebook-images")
-.remove([
-page.image_path
-]);
-
-if(storage.error){
-
-console.error(
-storage.error
-);
-
-}
-
-}
-
-await loadAdmin();
-await loadPages();
-
-showToast(
-"Halaman dihapus."
-);
-
-}
-
-
-/* =========================================================
-REFRESH
-========================================================= */
-
-$("#refresh").onclick =
-async()=>{
-
-await loadAdmin();
-await loadPages();
-
-showToast(
-"Konten diperbarui."
-);
-
-};
-
-
-/* =========================================================
-PUBLISH
-========================================================= */
-
-$("#publish").onclick =
-async()=>{
-
-const result =
-await supabaseClient
-.from("ebook_pages")
-.update({
-published:true
-})
-.eq("published",false);
-
-if(result.error){
-
-console.error(result.error);
-
-showToast(
-"Publish gagal."
-);
-
-return;
-
-}
-
-await loadAdmin();
-await loadPages();
-
-showToast(
-"Semua halaman dipublikasikan."
-);
-
-};
-
-
-/* =========================================================
-LOGOUT
-========================================================= */
-
-$("#logout").onclick =
-async()=>{
-
-if(supabaseClient){
-
-await supabaseClient.auth.signOut();
-
-}
-
-adminOverlay.classList.remove("open");
-
-showToast(
-"Logout berhasil."
-);
-
-};
-
-
-/* =========================================================
-CLOSE ALL
-========================================================= */
-
-function closeAll(){
-
-loginOverlay.classList.remove("open");
-adminOverlay.classList.remove("open");
-zoom.classList.remove("open");
-thumbs.classList.remove("open");
-
-}
-
-
-/* =========================================================
-INITIALIZATION
-========================================================= */
-
-async function initialize(){
-
-/*
-CRITICAL:
-
-Loader tidak lagi bergantung pada Supabase.
-*/
-
-try{
-
-/*
-Render interface terlebih dahulu.
-*/
-
-render();
-
-
-/*
-Jika Supabase belum dipasang,
-website tetap berjalan.
-*/
-
-if(!CONFIGURED){
-
-console.warn(
-"Supabase belum dikonfigurasi."
-);
-
-showToast(
-"Mode demo: Supabase belum dikonfigurasi."
-);
-
-return;
-
-}
-
-
-/*
-Load database dengan timeout.
-*/
-
-await Promise.race([
-
-loadPages(),
-
-new Promise(
-resolve =>
-setTimeout(
-resolve,
-7000
-)
-)
-
-];
-
-}catch(error){
-
-console.error(
-"INIT ERROR:",
-error
-);
-
-}finally{
-
-/*
-WAJIB:
-
-Loader selalu ditutup.
-*/
-
-loader.classList.add("hide");
-
-}
-
-}
-
-
-/* =========================================================
-ABSOLUTE LOADER SAFETY
+   HARD LOADING SAFETY
 ========================================================= */
 
 setTimeout(
-()=>{
-loader.classList.add("hide");
-},
-5000
+  () => {
+
+    if (!loaderFinished) {
+
+      console.warn(
+        "Loader safety timeout."
+      );
+
+      finishLoader();
+
+    }
+
+  },
+  5000
 );
 
 
 /* =========================================================
-START
+   RUN
 ========================================================= */
 
-initialize();
+boot();
 
 </script>
 
