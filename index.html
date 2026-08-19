@@ -1,0 +1,4558 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<meta
+    name="theme-color"
+    content="#050609"
+>
+
+<meta
+    name="description"
+    content="A premium digital A4 publication."
+>
+
+<title>THE ARCHIVE</title>
+
+
+<!-- ========================================================
+     SUPABASE
+======================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<style>
+
+/* ==========================================================
+   ROOT
+========================================================== */
+
+:root {
+
+    --bg: #050609;
+
+    --bg-soft: #0b0d11;
+
+    --panel: rgba(14,16,21,.88);
+
+    --paper: #ffffff;
+
+    --text: #f5f5f2;
+
+    --muted: #858a94;
+
+    --muted-2: #60656f;
+
+    --line: rgba(255,255,255,.10);
+
+    --line-strong: rgba(255,255,255,.20);
+
+    --success: #7ce0a0;
+
+    --danger: #ff8585;
+
+    --shadow:
+        0 40px 100px rgba(0,0,0,.58);
+
+    --ease:
+        cubic-bezier(.22,.61,.36,1);
+
+}
+
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+* {
+
+    box-sizing: border-box;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+html {
+
+    min-height: 100%;
+
+    background: var(--bg);
+
+}
+
+
+body {
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+    background:
+
+        radial-gradient(
+            circle at 50% -15%,
+            rgba(255,255,255,.09),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 50% 115%,
+            rgba(255,255,255,.04),
+            transparent 38%
+        ),
+
+        var(--bg);
+
+    color: var(--text);
+
+    font-family:
+
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+}
+
+
+button,
+input {
+
+    font: inherit;
+
+}
+
+
+button {
+
+    border: 0;
+
+}
+
+
+img {
+
+    display: block;
+
+    max-width: 100%;
+
+}
+
+
+::selection {
+
+    background: white;
+
+    color: black;
+
+}
+
+
+/* ==========================================================
+   LOADING SCREEN
+========================================================== */
+
+#loader {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 99999;
+
+    display: grid;
+
+    place-items: center;
+
+    background: #050609;
+
+    transition:
+
+        opacity .7s var(--ease),
+
+        visibility .7s;
+
+}
+
+
+#loader.hide {
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+}
+
+
+.loader-inner {
+
+    text-align: center;
+
+}
+
+
+.loader-mark {
+
+    width: 58px;
+
+    height: 58px;
+
+    margin: auto;
+
+    border: 1px solid rgba(255,255,255,.12);
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation:
+
+        spin 1s linear infinite;
+
+}
+
+
+.loader-text {
+
+    margin-top: 22px;
+
+    color: #777c85;
+
+    font-size: 9px;
+
+    letter-spacing: .35em;
+
+    text-transform: uppercase;
+
+}
+
+
+@keyframes spin {
+
+    to {
+
+        transform: rotate(360deg);
+
+    }
+
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.header {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    z-index: 1000;
+
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding:
+
+        0 clamp(16px,4vw,50px);
+
+    pointer-events: none;
+
+}
+
+
+.header::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: -1;
+
+    background:
+
+        linear-gradient(
+            to bottom,
+            rgba(5,6,9,.96),
+            rgba(5,6,9,.72),
+            transparent
+        );
+
+    backdrop-filter: blur(15px);
+
+}
+
+
+.header > * {
+
+    pointer-events: auto;
+
+}
+
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+}
+
+
+.brand-mark {
+
+    width: 29px;
+
+    height: 29px;
+
+    display: grid;
+
+    place-items: center;
+
+    border: 1px solid rgba(255,255,255,.28);
+
+    transform: rotate(45deg);
+
+}
+
+
+.brand-mark span {
+
+    transform: rotate(-45deg);
+
+    font-size: 9px;
+
+}
+
+
+.brand-name {
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: .34em;
+
+}
+
+
+.header-actions {
+
+    display: flex;
+
+    gap: 7px;
+
+}
+
+
+.icon-button {
+
+    width: 42px;
+
+    height: 42px;
+
+    display: grid;
+
+    place-items: center;
+
+    color: white;
+
+    background: rgba(255,255,255,.045);
+
+    border: 1px solid var(--line);
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    transition:
+
+        transform .25s var(--ease),
+
+        background .25s,
+
+        border-color .25s;
+
+}
+
+
+.icon-button:hover {
+
+    transform: translateY(-2px);
+
+    background: rgba(255,255,255,.11);
+
+    border-color: var(--line-strong);
+
+}
+
+
+/* ==========================================================
+   READER
+========================================================== */
+
+.reader {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+
+        105px 14px 105px;
+
+}
+
+
+/* ==========================================================
+   BOOK
+========================================================== */
+
+.book-frame {
+
+    position: relative;
+
+    width:
+
+        min(
+            92vw,
+            calc(78vh * .70710678)
+        );
+
+    aspect-ratio: .70710678;
+
+    perspective: 2500px;
+
+}
+
+
+.book-frame::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 2% -3% -3% 2%;
+
+    z-index: -2;
+
+    background: #111318;
+
+    filter: blur(16px);
+
+    opacity: .75;
+
+}
+
+
+.book-frame::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 50;
+
+    pointer-events: none;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.16),
+            transparent 9%,
+            transparent 91%,
+            rgba(0,0,0,.08)
+        );
+
+    mix-blend-mode: multiply;
+
+}
+
+
+.book {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 100%;
+
+    transform-style: preserve-3d;
+
+}
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+.page {
+
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    background: white;
+
+    opacity: 0;
+
+    transform:
+
+        translate3d(45px,0,0)
+
+        scale(.985);
+
+    transition:
+
+        opacity .48s var(--ease),
+
+        transform .68s var(--ease);
+
+    pointer-events: none;
+
+}
+
+
+.page.active {
+
+    opacity: 1;
+
+    transform:
+
+        translate3d(0,0,0)
+
+        scale(1);
+
+    pointer-events: auto;
+
+}
+
+
+.page.enter-left {
+
+    transform:
+
+        translate3d(-45px,0,0)
+
+        scale(.985);
+
+}
+
+
+.page.enter-right {
+
+    transform:
+
+        translate3d(45px,0,0)
+
+        scale(.985);
+
+}
+
+
+.page img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    background: white;
+
+    user-select: none;
+
+    -webkit-user-drag: none;
+
+}
+
+
+/* ==========================================================
+   EMPTY
+========================================================== */
+
+.empty-state {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 10;
+
+    display: none;
+
+    place-items: center;
+
+    text-align: center;
+
+    padding: 35px;
+
+    border: 1px solid var(--line);
+
+    background:
+
+        linear-gradient(
+            145deg,
+            #161920,
+            #08090c
+        );
+
+}
+
+
+.empty-state.show {
+
+    display: grid;
+
+}
+
+
+.empty-title {
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: .18em;
+
+    text-transform: uppercase;
+
+}
+
+
+.empty-subtitle {
+
+    margin-top: 10px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+}
+
+
+/* ==========================================================
+   BOTTOM NAVIGATION
+========================================================== */
+
+.navigation {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 18px;
+
+    z-index: 1200;
+
+    transform: translateX(-50%);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 8px;
+
+    border: 1px solid var(--line);
+
+    border-radius: 999px;
+
+    background: rgba(8,10,13,.80);
+
+    backdrop-filter: blur(25px);
+
+    box-shadow:
+
+        0 25px 80px rgba(0,0,0,.50);
+
+}
+
+
+.nav-button {
+
+    width: 42px;
+
+    height: 42px;
+
+    display: grid;
+
+    place-items: center;
+
+    color: white;
+
+    background: rgba(255,255,255,.045);
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    transition: .25s;
+
+}
+
+
+.nav-button:hover {
+
+    background: rgba(255,255,255,.12);
+
+}
+
+
+.nav-button:disabled {
+
+    opacity: .2;
+
+    cursor: default;
+
+}
+
+
+.page-counter {
+
+    min-width: 75px;
+
+    text-align: center;
+
+    color: #aeb2ba;
+
+    font-size: 9px;
+
+    letter-spacing: .15em;
+
+}
+
+
+/* ==========================================================
+   PROGRESS
+========================================================== */
+
+.progress {
+
+    position: fixed;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    height: 2px;
+
+    z-index: 2000;
+
+    background: rgba(255,255,255,.04);
+
+}
+
+
+.progress-bar {
+
+    width: 0;
+
+    height: 100%;
+
+    background: white;
+
+    transition:
+
+        width .5s var(--ease);
+
+}
+
+
+/* ==========================================================
+   THUMBNAILS
+========================================================== */
+
+.thumbnail-panel {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 83px;
+
+    z-index: 1300;
+
+    width: min(94vw,1050px);
+
+    max-height: 0;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform: translateX(-50%);
+
+    border: 1px solid transparent;
+
+    border-radius: 18px;
+
+    background: rgba(9,11,15,.91);
+
+    backdrop-filter: blur(25px);
+
+    transition:
+
+        max-height .4s var(--ease),
+
+        opacity .3s,
+
+        border-color .3s;
+
+}
+
+
+.thumbnail-panel.open {
+
+    max-height: 230px;
+
+    opacity: 1;
+
+    pointer-events: auto;
+
+    border-color: var(--line);
+
+}
+
+
+.thumbnail-list {
+
+    display: flex;
+
+    gap: 10px;
+
+    padding: 15px;
+
+    overflow-x: auto;
+
+}
+
+
+.thumbnail {
+
+    position: relative;
+
+    flex: 0 0 auto;
+
+    width: 75px;
+
+    aspect-ratio: .707;
+
+    overflow: hidden;
+
+    background: white;
+
+    border: 2px solid transparent;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    opacity: .55;
+
+    transition: .25s;
+
+}
+
+
+.thumbnail:hover {
+
+    opacity: .85;
+
+}
+
+
+.thumbnail.active {
+
+    border-color: white;
+
+    opacity: 1;
+
+}
+
+
+.thumbnail img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+/* ==========================================================
+   ZOOM
+========================================================== */
+
+.zoom {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 8000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 25px;
+
+    background: rgba(0,0,0,.95);
+
+}
+
+
+.zoom.open {
+
+    display: flex;
+
+}
+
+
+.zoom-image {
+
+    max-width: 96vw;
+
+    max-height: 92vh;
+
+    object-fit: contain;
+
+    cursor: zoom-in;
+
+    transition: transform .25s ease;
+
+}
+
+
+.zoom-image.zoomed {
+
+    transform: scale(2);
+
+    cursor: zoom-out;
+
+}
+
+
+/* ==========================================================
+   OVERLAY
+========================================================== */
+
+.overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 6000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 18px;
+
+    background: rgba(0,0,0,.78);
+
+    backdrop-filter: blur(22px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: .35s var(--ease);
+
+}
+
+
+.overlay.open {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+
+/* ==========================================================
+   LOGIN
+========================================================== */
+
+.login-card {
+
+    width: min(420px,100%);
+
+    padding: 32px;
+
+    border: 1px solid var(--line);
+
+    border-radius: 24px;
+
+    background: #101218;
+
+    box-shadow:
+
+        0 50px 150px rgba(0,0,0,.75);
+
+}
+
+
+.login-title {
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    letter-spacing: .13em;
+
+    text-transform: uppercase;
+
+}
+
+
+.login-subtitle {
+
+    margin-top: 8px;
+
+    margin-bottom: 25px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+}
+
+
+.form-field {
+
+    margin-bottom: 14px;
+
+}
+
+
+.form-field label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    letter-spacing: .14em;
+
+    text-transform: uppercase;
+
+}
+
+
+.form-field input {
+
+    width: 100%;
+
+    height: 46px;
+
+    padding: 0 13px;
+
+    color: white;
+
+    background: rgba(255,255,255,.04);
+
+    border: 1px solid var(--line);
+
+    border-radius: 10px;
+
+    outline: none;
+
+}
+
+
+.form-field input:focus {
+
+    border-color: rgba(255,255,255,.4);
+
+}
+
+
+.form-actions {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 20px;
+
+}
+
+
+/* ==========================================================
+   ADMIN
+========================================================== */
+
+.admin-card {
+
+    width: min(1100px,100%);
+
+    max-height: calc(100vh - 28px);
+
+    overflow: auto;
+
+    border: 1px solid var(--line);
+
+    border-radius: 24px;
+
+    background: #101218;
+
+    box-shadow:
+
+        0 50px 160px rgba(0,0,0,.75);
+
+}
+
+
+.admin-header {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 20;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 20px 24px;
+
+    background: rgba(16,18,24,.94);
+
+    backdrop-filter: blur(20px);
+
+    border-bottom: 1px solid var(--line);
+
+}
+
+
+.admin-title {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: .12em;
+
+    text-transform: uppercase;
+
+}
+
+
+.admin-subtitle {
+
+    margin-top: 6px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+}
+
+
+.online {
+
+    color: var(--success);
+
+}
+
+
+.admin-body {
+
+    padding: 24px;
+
+}
+
+
+.admin-footer {
+
+    position: sticky;
+
+    bottom: 0;
+
+    z-index: 20;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    padding: 14px 24px;
+
+    background: rgba(16,18,24,.95);
+
+    backdrop-filter: blur(20px);
+
+    border-top: 1px solid var(--line);
+
+}
+
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+.button {
+
+    min-height: 43px;
+
+    padding: 0 17px;
+
+    color: white;
+
+    background: rgba(255,255,255,.05);
+
+    border: 1px solid var(--line);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .12em;
+
+    text-transform: uppercase;
+
+    transition: .25s;
+
+}
+
+
+.button:hover {
+
+    background: rgba(255,255,255,.12);
+
+}
+
+
+.button.primary {
+
+    color: #08090b;
+
+    background: white;
+
+    border-color: white;
+
+}
+
+
+.button.danger {
+
+    color: var(--danger);
+
+}
+
+
+/* ==========================================================
+   UPLOAD AREA
+========================================================== */
+
+.upload-area {
+
+    min-height: 185px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    border: 1px dashed rgba(255,255,255,.18);
+
+    border-radius: 18px;
+
+    background: rgba(255,255,255,.025);
+
+    cursor: pointer;
+
+    transition: .3s;
+
+}
+
+
+.upload-area:hover,
+
+.upload-area.dragging {
+
+    border-color: rgba(255,255,255,.48);
+
+    background: rgba(255,255,255,.06);
+
+}
+
+
+.upload-plus {
+
+    width: 58px;
+
+    height: 58px;
+
+    display: grid;
+
+    place-items: center;
+
+    color: black;
+
+    background: white;
+
+    border-radius: 50%;
+
+    font-size: 29px;
+
+    font-weight: 300;
+
+}
+
+
+.upload-title {
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: .12em;
+
+}
+
+
+.upload-help {
+
+    color: var(--muted-2);
+
+    font-size: 9px;
+
+}
+
+
+#file-input {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   ADMIN LIST
+========================================================== */
+
+.list-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin: 25px 0 12px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    letter-spacing: .16em;
+
+    text-transform: uppercase;
+
+}
+
+
+.admin-list {
+
+    display: grid;
+
+    gap: 7px;
+
+}
+
+
+.admin-row {
+
+    display: grid;
+
+    grid-template-columns:
+
+        58px
+        minmax(0,1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 9px;
+
+    background: rgba(255,255,255,.035);
+
+    border: 1px solid rgba(255,255,255,.06);
+
+    border-radius: 13px;
+
+}
+
+
+.admin-thumb {
+
+    width: 58px;
+
+    aspect-ratio: .707;
+
+    overflow: hidden;
+
+    background: white;
+
+    border-radius: 6px;
+
+}
+
+
+.admin-thumb img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+.admin-page-title {
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 11px;
+
+}
+
+
+.admin-page-meta {
+
+    margin-top: 5px;
+
+    color: var(--muted-2);
+
+    font-size: 8px;
+
+}
+
+
+.row-buttons {
+
+    display: flex;
+
+    gap: 5px;
+
+}
+
+
+.small-button {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: grid;
+
+    place-items: center;
+
+    color: white;
+
+    background: rgba(255,255,255,.05);
+
+    border: 1px solid var(--line);
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+}
+
+
+.small-button:hover {
+
+    background: rgba(255,255,255,.13);
+
+}
+
+
+.small-button.delete:hover {
+
+    color: var(--danger);
+
+    border-color: rgba(255,100,100,.3);
+
+}
+
+
+/* ==========================================================
+   TOAST
+========================================================== */
+
+.toast {
+
+    position: fixed;
+
+    top: 88px;
+
+    left: 50%;
+
+    z-index: 10000;
+
+    transform: translate(-50%,-15px);
+
+    padding: 12px 17px;
+
+    color: white;
+
+    background: rgba(15,17,21,.96);
+
+    border: 1px solid var(--line);
+
+    border-radius: 999px;
+
+    box-shadow:
+
+        0 20px 70px rgba(0,0,0,.5);
+
+    font-size: 9px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: .3s var(--ease);
+
+}
+
+
+.toast.show {
+
+    opacity: 1;
+
+    transform: translate(-50%,0);
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:700px) {
+
+    .reader {
+
+        padding:
+
+            88px 4px 92px;
+
+    }
+
+
+    .book-frame {
+
+        width: 97vw;
+
+    }
+
+
+    .brand-name {
+
+        display: none;
+
+    }
+
+
+    .admin-body {
+
+        padding: 14px;
+
+    }
+
+
+    .admin-header {
+
+        padding: 16px;
+
+    }
+
+
+    .admin-footer {
+
+        padding: 12px 14px;
+
+    }
+
+
+    .admin-row {
+
+        grid-template-columns:
+
+            50px
+            minmax(0,1fr)
+            auto;
+
+    }
+
+
+    .admin-thumb {
+
+        width: 50px;
+
+    }
+
+
+    .row-buttons {
+
+        flex-direction: column;
+
+    }
+
+
+    .thumbnail-panel {
+
+        bottom: 74px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   LANDSCAPE PHONE
+========================================================== */
+
+@media (
+
+    max-height:560px
+
+) and (
+
+    orientation:landscape
+
+) {
+
+    .reader {
+
+        padding: 70px 8px 70px;
+
+    }
+
+
+    .book-frame {
+
+        height: 78vh;
+
+        width:
+
+            calc(78vh * .70710678);
+
+    }
+
+}
+
+
+/* ==========================================================
+   REDUCED MOTION
+========================================================== */
+
+@media (
+
+    prefers-reduced-motion: reduce
+
+) {
+
+    * {
+
+        animation-duration: .01ms !important;
+
+        transition-duration: .01ms !important;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================================
+     LOADER
+======================================================== -->
+
+<div id="loader">
+
+    <div class="loader-inner">
+
+        <div class="loader-mark"></div>
+
+        <div class="loader-text">
+            Preparing the archive
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     HEADER
+======================================================== -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            <span>◆</span>
+        </div>
+
+        <div class="brand-name">
+            THE ARCHIVE
+        </div>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <button
+            class="icon-button"
+            id="thumbnail-button"
+            title="Pages"
+        >
+            ▦
+        </button>
+
+
+        <button
+            class="icon-button"
+            id="fullscreen-button"
+            title="Fullscreen"
+        >
+            ⛶
+        </button>
+
+
+        <button
+            class="icon-button"
+            id="admin-button"
+            title="Admin"
+        >
+            ⚙
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ========================================================
+     READER
+======================================================== -->
+
+<main class="reader">
+
+    <section
+        class="book-frame"
+        id="book-frame"
+    >
+
+        <div
+            class="book"
+            id="book"
+        ></div>
+
+
+        <div
+            class="empty-state"
+            id="empty-state"
+        >
+
+            <div>
+
+                <div class="empty-title">
+                    No published pages
+                </div>
+
+                <div class="empty-subtitle">
+                    Add pages through the Admin panel.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ========================================================
+     NAVIGATION
+======================================================== -->
+
+<nav class="navigation">
+
+    <button
+        class="nav-button"
+        id="previous"
+        aria-label="Previous page"
+    >
+        ‹
+    </button>
+
+
+    <div
+        class="page-counter"
+        id="page-counter"
+    >
+        0 / 0
+    </div>
+
+
+    <button
+        class="nav-button"
+        id="next"
+        aria-label="Next page"
+    >
+        ›
+    </button>
+
+</nav>
+
+
+<!-- ========================================================
+     PROGRESS
+======================================================== -->
+
+<div class="progress">
+
+    <div
+        class="progress-bar"
+        id="progress-bar"
+    ></div>
+
+</div>
+
+
+<!-- ========================================================
+     THUMBNAILS
+======================================================== -->
+
+<section
+    class="thumbnail-panel"
+    id="thumbnail-panel"
+>
+
+    <div
+        class="thumbnail-list"
+        id="thumbnail-list"
+    ></div>
+
+</section>
+
+
+<!-- ========================================================
+     ZOOM
+======================================================== -->
+
+<div
+    class="zoom"
+    id="zoom"
+>
+
+    <img
+        class="zoom-image"
+        id="zoom-image"
+        alt=""
+    >
+
+
+    <button
+        class="icon-button"
+        id="close-zoom"
+        style="
+            position:absolute;
+            top:20px;
+            right:20px;
+        "
+    >
+        ×
+    </button>
+
+</div>
+
+
+<!-- ========================================================
+     LOGIN
+======================================================== -->
+
+<div
+    class="overlay"
+    id="login-overlay"
+>
+
+    <form
+        class="login-card"
+        id="login-form"
+    >
+
+        <div class="login-title">
+            Admin Access
+        </div>
+
+
+        <div class="login-subtitle">
+            Sign in to manage this publication.
+        </div>
+
+
+        <div class="form-field">
+
+            <label>
+                Email
+            </label>
+
+            <input
+                id="login-email"
+                type="email"
+                autocomplete="username"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-field">
+
+            <label>
+                Password
+            </label>
+
+            <input
+                id="login-password"
+                type="password"
+                autocomplete="current-password"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                type="button"
+                class="button"
+                id="cancel-login"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                type="submit"
+                class="button primary"
+                id="login-submit"
+                style="flex:1"
+            >
+                Login
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ========================================================
+     ADMIN
+======================================================== -->
+
+<div
+    class="overlay"
+    id="admin-overlay"
+>
+
+    <section class="admin-card">
+
+
+        <header class="admin-header">
+
+            <div>
+
+                <div class="admin-title">
+                    Content Manager
+                </div>
+
+                <div class="admin-subtitle">
+                    Secure administrator workspace ·
+                    <span class="online">
+                        ONLINE
+                    </span>
+                </div>
+
+            </div>
+
+
+            <button
+                class="icon-button"
+                id="close-admin"
+            >
+                ×
+            </button>
+
+        </header>
+
+
+        <div class="admin-body">
+
+
+            <!-- =================================================
+                 UPLOAD
+            ================================================== -->
+
+            <label
+                class="upload-area"
+                id="upload-area"
+            >
+
+                <input
+                    type="file"
+                    id="file-input"
+                    accept="
+                        image/jpeg,
+                        image/png,
+                        image/webp,
+                        image/avif
+                    "
+                    multiple
+                >
+
+
+                <div class="upload-plus">
+                    +
+                </div>
+
+
+                <div class="upload-title">
+                    ADD IMAGES
+                </div>
+
+
+                <div class="upload-help">
+                    JPG · PNG · WEBP · AVIF · MULTIPLE
+                </div>
+
+            </label>
+
+
+            <!-- =================================================
+                 LIST HEADER
+            ================================================== -->
+
+            <div class="list-header">
+
+                <span>
+                    Pages
+                </span>
+
+                <span id="page-count">
+                    0 pages
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 PAGE LIST
+            ================================================== -->
+
+            <div
+                class="admin-list"
+                id="admin-list"
+            ></div>
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="admin-footer">
+
+            <button
+                class="button"
+                id="refresh-admin"
+            >
+                Refresh
+            </button>
+
+
+            <button
+                class="button"
+                id="logout"
+            >
+                Logout
+            </button>
+
+
+            <button
+                class="button primary"
+                id="publish"
+            >
+                Publish
+            </button>
+
+        </footer>
+
+    </section>
+
+</div>
+
+
+<!-- ========================================================
+     TOAST
+======================================================== -->
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+
+/* ==========================================================
+   CONFIGURATION
+========================================================== */
+
+/*
+    ========================================================
+    WAJIB DIGANTI
+    ========================================================
+
+    Ambil dari:
+
+    Supabase
+    → Project Settings
+    → API
+
+    Gunakan:
+    - Project URL
+    - Publishable key / anon key
+
+    JANGAN gunakan:
+    - service_role
+*/
+
+const SUPABASE_URL =
+    "PASTE_SUPABASE_PROJECT_URL_HERE";
+
+
+const SUPABASE_KEY =
+    "PASTE_SUPABASE_PUBLISHABLE_OR_ANON_KEY_HERE";
+
+
+/* ==========================================================
+   SUPABASE
+========================================================== */
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* ==========================================================
+   APPLICATION STATE
+========================================================== */
+
+let publicPages = [];
+
+let adminPages = [];
+
+let currentPage = 0;
+
+let isChangingPage = false;
+
+
+/* ==========================================================
+   DOM HELPER
+========================================================== */
+
+const $ =
+    selector =>
+        document.querySelector(selector);
+
+
+/* ==========================================================
+   DOM
+========================================================== */
+
+const loader =
+    $("#loader");
+
+const book =
+    $("#book");
+
+const emptyState =
+    $("#empty-state");
+
+const pageCounter =
+    $("#page-counter");
+
+const previousButton =
+    $("#previous");
+
+const nextButton =
+    $("#next");
+
+const progressBar =
+    $("#progress-bar");
+
+const thumbnailPanel =
+    $("#thumbnail-panel");
+
+const thumbnailList =
+    $("#thumbnail-list");
+
+const zoom =
+    $("#zoom");
+
+const zoomImage =
+    $("#zoom-image");
+
+const loginOverlay =
+    $("#login-overlay");
+
+const adminOverlay =
+    $("#admin-overlay");
+
+const loginForm =
+    $("#login-form");
+
+const loginEmail =
+    $("#login-email");
+
+const loginPassword =
+    $("#login-password");
+
+const adminList =
+    $("#admin-list");
+
+const pageCount =
+    $("#page-count");
+
+const uploadArea =
+    $("#upload-area");
+
+const fileInput =
+    $("#file-input");
+
+const toast =
+    $("#toast");
+
+
+/* ==========================================================
+   TOAST
+========================================================== */
+
+let toastTimer;
+
+
+function showToast(
+    message
+) {
+
+    toast.textContent =
+        message;
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2600
+        );
+
+}
+
+
+/* ==========================================================
+   PUBLIC PAGES
+========================================================== */
+
+async function loadPublicPages() {
+
+    const response =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .select(
+                "id,title,image_url,page_order"
+            )
+
+            .eq(
+                "published",
+                true
+            )
+
+            .order(
+                "page_order",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (
+        response.error
+    ) {
+
+        console.error(
+            response.error
+        );
+
+        showToast(
+            "Gagal memuat ebook."
+        );
+
+        return;
+
+    }
+
+
+    publicPages =
+        response.data || [];
+
+
+    if (
+        currentPage >= publicPages.length
+    ) {
+
+        currentPage =
+            Math.max(
+                0,
+                publicPages.length - 1
+            );
+
+    }
+
+
+    renderBook();
+
+}
+
+
+/* ==========================================================
+   RENDER BOOK
+========================================================== */
+
+function renderBook() {
+
+    book.innerHTML =
+        "";
+
+    thumbnailList.innerHTML =
+        "";
+
+
+    if (
+        publicPages.length === 0
+    ) {
+
+        emptyState.classList.add(
+            "show"
+        );
+
+        pageCounter.textContent =
+            "0 / 0";
+
+        previousButton.disabled =
+            true;
+
+        nextButton.disabled =
+            true;
+
+        progressBar.style.width =
+            "0%";
+
+        return;
+
+    }
+
+
+    emptyState.classList.remove(
+        "show"
+    );
+
+
+    publicPages.forEach(
+        (page,index) => {
+
+            const pageElement =
+                document.createElement(
+                    "article"
+                );
+
+
+            pageElement.className =
+                "page";
+
+
+            if (
+                index === currentPage
+            ) {
+
+                pageElement.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                page.image_url;
+
+
+            image.alt =
+                page.title ||
+                `Page ${index + 1}`;
+
+
+            image.draggable =
+                false;
+
+
+            image.loading =
+                index === currentPage
+                    ? "eager"
+                    : "lazy";
+
+
+            image.decoding =
+                "async";
+
+
+            image.addEventListener(
+                "dblclick",
+                () => {
+
+                    openZoom(
+                        page.image_url
+                    );
+
+                }
+            );
+
+
+            pageElement.appendChild(
+                image
+            );
+
+
+            book.appendChild(
+                pageElement
+            );
+
+
+            /* =================================================
+               THUMBNAIL
+            ================================================= */
+
+            const thumbnail =
+                document.createElement(
+                    "button"
+                );
+
+
+            thumbnail.type =
+                "button";
+
+
+            thumbnail.className =
+                "thumbnail";
+
+
+            if (
+                index === currentPage
+            ) {
+
+                thumbnail.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            const thumbnailImage =
+                document.createElement(
+                    "img"
+                );
+
+
+            thumbnailImage.src =
+                page.image_url;
+
+
+            thumbnailImage.alt =
+                "";
+
+
+            thumbnail.appendChild(
+                thumbnailImage
+            );
+
+
+            thumbnail.addEventListener(
+                "click",
+                () => {
+
+                    goToPage(
+                        index
+                    );
+
+                }
+            );
+
+
+            thumbnailList.appendChild(
+                thumbnail
+            );
+
+        }
+    );
+
+
+    updateNavigation();
+
+}
+
+
+/* ==========================================================
+   NAVIGATION UI
+========================================================== */
+
+function updateNavigation() {
+
+    const total =
+        publicPages.length;
+
+
+    pageCounter.textContent =
+        total
+            ? `${currentPage + 1} / ${total}`
+            : "0 / 0";
+
+
+    previousButton.disabled =
+        currentPage <= 0;
+
+
+    nextButton.disabled =
+        currentPage >= total - 1;
+
+
+    let percentage = 0;
+
+
+    if (
+        total === 1
+    ) {
+
+        percentage =
+            100;
+
+    } else if (
+        total > 1
+    ) {
+
+        percentage =
+            (
+                currentPage /
+                (total - 1)
+            ) * 100;
+
+    }
+
+
+    progressBar.style.width =
+        `${percentage}%`;
+
+
+    [
+        ...thumbnailList.children
+    ].forEach(
+        (thumbnail,index) => {
+
+            thumbnail.classList.toggle(
+                "active",
+                index === currentPage
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   GO TO PAGE
+========================================================== */
+
+function goToPage(
+    target
+) {
+
+    if (
+        isChangingPage
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        target < 0 ||
+        target >= publicPages.length
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        target === currentPage
+    ) {
+
+        return;
+
+    }
+
+
+    const oldPage =
+        book.children[currentPage];
+
+
+    const newPage =
+        book.children[target];
+
+
+    if (
+        !oldPage ||
+        !newPage
+    ) {
+
+        return;
+
+    }
+
+
+    isChangingPage =
+        true;
+
+
+    const forward =
+        target > currentPage;
+
+
+    newPage.classList.add(
+        forward
+            ? "enter-right"
+            : "enter-left"
+    );
+
+
+    newPage.style.opacity =
+        "0";
+
+
+    requestAnimationFrame(
+        () => {
+
+            oldPage.classList.remove(
+                "active"
+            );
+
+
+            newPage.classList.add(
+                "active"
+            );
+
+
+            newPage.style.opacity =
+                "";
+
+
+            newPage.classList.remove(
+                forward
+                    ? "enter-right"
+                    : "enter-left"
+            );
+
+        }
+    );
+
+
+    currentPage =
+        target;
+
+
+    setTimeout(
+        () => {
+
+            isChangingPage =
+                false;
+
+            updateNavigation();
+
+        },
+        680
+    );
+
+}
+
+
+/* ==========================================================
+   PREVIOUS / NEXT
+========================================================== */
+
+previousButton.addEventListener(
+    "click",
+    () => {
+
+        goToPage(
+            currentPage - 1
+        );
+
+    }
+);
+
+
+nextButton.addEventListener(
+    "click",
+    () => {
+
+        goToPage(
+            currentPage + 1
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   KEYBOARD
+========================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "ArrowLeft"
+        ) {
+
+            goToPage(
+                currentPage - 1
+            );
+
+        }
+
+
+        if (
+            event.key === "ArrowRight"
+        ) {
+
+            goToPage(
+                currentPage + 1
+            );
+
+        }
+
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeOverlays();
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   TOUCH SWIPE
+========================================================== */
+
+let touchStartX =
+    null;
+
+let touchStartY =
+    null;
+
+
+book.addEventListener(
+    "touchstart",
+    event => {
+
+        const touch =
+            event.changedTouches[0];
+
+
+        touchStartX =
+            touch.clientX;
+
+
+        touchStartY =
+            touch.clientY;
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+book.addEventListener(
+    "touchend",
+    event => {
+
+        if (
+            touchStartX === null
+        ) {
+
+            return;
+
+        }
+
+
+        const touch =
+            event.changedTouches[0];
+
+
+        const deltaX =
+            touch.clientX -
+            touchStartX;
+
+
+        const deltaY =
+            touch.clientY -
+            touchStartY;
+
+
+        touchStartX =
+            null;
+
+
+        touchStartY =
+            null;
+
+
+        if (
+            Math.abs(deltaX) < 45
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            Math.abs(deltaX) <
+            Math.abs(deltaY)
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            deltaX < 0
+        ) {
+
+            goToPage(
+                currentPage + 1
+            );
+
+        } else {
+
+            goToPage(
+                currentPage - 1
+            );
+
+        }
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+/* ==========================================================
+   THUMBNAILS
+========================================================== */
+
+$("#thumbnail-button")
+    .addEventListener(
+        "click",
+        () => {
+
+            thumbnailPanel.classList.toggle(
+                "open"
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   FULLSCREEN
+========================================================== */
+
+$("#fullscreen-button")
+    .addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                if (
+                    !document.fullscreenElement
+                ) {
+
+                    await document.documentElement
+                        .requestFullscreen();
+
+                } else {
+
+                    await document.exitFullscreen();
+
+                }
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+/* ==========================================================
+   ZOOM
+========================================================== */
+
+function openZoom(
+    imageUrl
+) {
+
+    zoomImage.src =
+        imageUrl;
+
+    zoomImage.classList.remove(
+        "zoomed"
+    );
+
+    zoom.classList.add(
+        "open"
+    );
+
+}
+
+
+zoomImage.addEventListener(
+    "click",
+    () => {
+
+        zoomImage.classList.toggle(
+            "zoomed"
+        );
+
+    }
+);
+
+
+$("#close-zoom")
+    .addEventListener(
+        "click",
+        () => {
+
+            zoom.classList.remove(
+                "open"
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   ADMIN BUTTON
+========================================================== */
+
+$("#admin-button")
+    .addEventListener(
+        "click",
+        async () => {
+
+            const session =
+                await getSession();
+
+
+            if (
+                session
+            ) {
+
+                await openAdmin();
+
+            } else {
+
+                loginOverlay.classList.add(
+                    "open"
+                );
+
+                setTimeout(
+                    () => {
+
+                        loginEmail.focus();
+
+                    },
+                    150
+                );
+
+            }
+
+        }
+    );
+
+
+/* ==========================================================
+   SESSION
+========================================================== */
+
+async function getSession() {
+
+    const response =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    return response.data.session;
+
+}
+
+
+/* ==========================================================
+   LOGIN
+========================================================== */
+
+loginForm.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const email =
+            loginEmail.value.trim();
+
+
+        const password =
+            loginPassword.value;
+
+
+        const submit =
+            $("#login-submit");
+
+
+        submit.disabled =
+            true;
+
+
+        submit.textContent =
+            "Signing in...";
+
+
+        const response =
+            await supabaseClient
+                .auth
+                .signInWithPassword({
+                    email,
+                    password
+                });
+
+
+        submit.disabled =
+            false;
+
+
+        submit.textContent =
+            "Login";
+
+
+        if (
+            response.error
+        ) {
+
+            console.error(
+                response.error
+            );
+
+            showToast(
+                "Email atau password salah."
+            );
+
+            return;
+
+        }
+
+
+        loginPassword.value =
+            "";
+
+
+        loginOverlay.classList.remove(
+            "open"
+        );
+
+
+        await openAdmin();
+
+    }
+);
+
+
+/* ==========================================================
+   CANCEL LOGIN
+========================================================== */
+
+$("#cancel-login")
+    .addEventListener(
+        "click",
+        () => {
+
+            loginOverlay.classList.remove(
+                "open"
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   OPEN ADMIN
+========================================================== */
+
+async function openAdmin() {
+
+    const session =
+        await getSession();
+
+
+    if (
+        !session
+    ) {
+
+        loginOverlay.classList.add(
+            "open"
+        );
+
+        return;
+
+    }
+
+
+    adminOverlay.classList.add(
+        "open"
+    );
+
+
+    await loadAdminPages();
+
+}
+
+
+/* ==========================================================
+   CLOSE ADMIN
+========================================================== */
+
+$("#close-admin")
+    .addEventListener(
+        "click",
+        () => {
+
+            adminOverlay.classList.remove(
+                "open"
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   LOAD ADMIN PAGES
+========================================================== */
+
+async function loadAdminPages() {
+
+    const response =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .select("*")
+
+            .order(
+                "page_order",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (
+        response.error
+    ) {
+
+        console.error(
+            response.error
+        );
+
+        showToast(
+            "Tidak dapat memuat halaman Admin."
+        );
+
+        return;
+
+    }
+
+
+    adminPages =
+        response.data || [];
+
+
+    renderAdminList();
+
+}
+
+
+/* ==========================================================
+   RENDER ADMIN LIST
+========================================================== */
+
+function renderAdminList() {
+
+    adminList.innerHTML =
+        "";
+
+
+    pageCount.textContent =
+        `${adminPages.length} pages`;
+
+
+    adminPages.forEach(
+        (page,index) => {
+
+            const row =
+                document.createElement(
+                    "article"
+                );
+
+
+            row.className =
+                "admin-row";
+
+
+            /* ================================================
+               THUMB
+            ================================================ */
+
+            const thumb =
+                document.createElement(
+                    "div"
+                );
+
+
+            thumb.className =
+                "admin-thumb";
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                page.image_url;
+
+
+            image.loading =
+                "lazy";
+
+
+            thumb.appendChild(
+                image
+            );
+
+
+            /* ================================================
+               INFO
+            ================================================ */
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+
+            title.className =
+                "admin-page-title";
+
+
+            title.textContent =
+                page.title ||
+                `Page ${index + 1}`;
+
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+
+            meta.className =
+                "admin-page-meta";
+
+
+            meta.textContent =
+                `PAGE ${index + 1} · ` +
+                (
+                    page.published
+                        ? "PUBLISHED"
+                        : "DRAFT"
+                );
+
+
+            info.appendChild(
+                title
+            );
+
+
+            info.appendChild(
+                meta
+            );
+
+
+            /* ================================================
+               BUTTONS
+            ================================================ */
+
+            const buttons =
+                document.createElement(
+                    "div"
+                );
+
+
+            buttons.className =
+                "row-buttons";
+
+
+            buttons.appendChild(
+                createSmallButton(
+                    "↑",
+                    () => {
+
+                        movePage(
+                            index,
+                            -1
+                        );
+
+                    }
+                )
+            );
+
+
+            buttons.appendChild(
+                createSmallButton(
+                    "↓",
+                    () => {
+
+                        movePage(
+                            index,
+                            1
+                        );
+
+                    }
+                )
+            );
+
+
+            buttons.appendChild(
+                createSmallButton(
+                    page.published
+                        ? "○"
+                        : "●",
+                    () => {
+
+                        togglePublished(
+                            page
+                        );
+
+                    }
+                )
+            );
+
+
+            const deleteButton =
+                createSmallButton(
+                    "×",
+                    () => {
+
+                        deletePage(
+                            page
+                        );
+
+                    }
+                );
+
+
+            deleteButton.classList.add(
+                "delete"
+            );
+
+
+            buttons.appendChild(
+                deleteButton
+            );
+
+
+            row.appendChild(
+                thumb
+            );
+
+
+            row.appendChild(
+                info
+            );
+
+
+            row.appendChild(
+                buttons
+            );
+
+
+            adminList.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   SMALL BUTTON
+========================================================== */
+
+function createSmallButton(
+    label,
+    callback
+) {
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.type =
+        "button";
+
+
+    button.className =
+        "small-button";
+
+
+    button.textContent =
+        label;
+
+
+    button.addEventListener(
+        "click",
+        callback
+    );
+
+
+    return button;
+
+}
+
+
+/* ==========================================================
+   UPLOAD AREA
+========================================================== */
+
+uploadArea.addEventListener(
+    "click",
+    () => {
+
+        fileInput.click();
+
+    }
+);
+
+
+[
+    "dragenter",
+    "dragover"
+].forEach(
+    eventName => {
+
+        uploadArea.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                uploadArea.classList.add(
+                    "dragging"
+                );
+
+            }
+        );
+
+    }
+);
+
+
+[
+    "dragleave",
+    "drop"
+].forEach(
+    eventName => {
+
+        uploadArea.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                uploadArea.classList.remove(
+                    "dragging"
+                );
+
+            }
+        );
+
+    }
+);
+
+
+uploadArea.addEventListener(
+    "drop",
+    event => {
+
+        const files =
+            Array.from(
+                event.dataTransfer.files
+            );
+
+
+        uploadFiles(
+            files
+        );
+
+    }
+);
+
+
+fileInput.addEventListener(
+    "change",
+    event => {
+
+        const files =
+            Array.from(
+                event.target.files
+            );
+
+
+        uploadFiles(
+            files
+        );
+
+
+        fileInput.value =
+            "";
+
+    }
+);
+
+
+/* ==========================================================
+   GET FILE EXTENSION
+========================================================== */
+
+function getExtension(
+    filename
+) {
+
+    const parts =
+        filename.split(".");
+
+
+    if (
+        parts.length < 2
+    ) {
+
+        return "jpg";
+
+    }
+
+
+    return parts
+        .pop()
+        .toLowerCase()
+        .replace(
+            /[^a-z0-9]/g,
+            ""
+        );
+
+}
+
+
+/* ==========================================================
+   NEXT PAGE ORDER
+========================================================== */
+
+async function getNextOrder() {
+
+    const response =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .select(
+                "page_order"
+            )
+
+            .order(
+                "page_order",
+                {
+                    ascending: false
+                }
+            )
+
+            .limit(1);
+
+
+    if (
+        response.error ||
+        !response.data ||
+        response.data.length === 0
+    ) {
+
+        return 1;
+
+    }
+
+
+    return (
+        response.data[0].page_order + 1
+    );
+
+}
+
+
+/* ==========================================================
+   UPLOAD FILES
+========================================================== */
+
+async function uploadFiles(
+    files
+) {
+
+    if (
+        !files.length
+    ) {
+
+        return;
+
+    }
+
+
+    const session =
+        await getSession();
+
+
+    if (
+        !session
+    ) {
+
+        showToast(
+            "Login Admin diperlukan."
+        );
+
+        return;
+
+    }
+
+
+    const images =
+        files.filter(
+            file =>
+                file.type.startsWith(
+                    "image/"
+                )
+        );
+
+
+    if (
+        images.length === 0
+    ) {
+
+        showToast(
+            "Tidak ada gambar valid."
+        );
+
+        return;
+
+    }
+
+
+    showToast(
+        `Mengupload ${images.length} gambar...`
+    );
+
+
+    let order =
+        await getNextOrder();
+
+
+    let successful =
+        0;
+
+
+    for (
+        const file of images
+    ) {
+
+        let storagePath =
+            null;
+
+
+        try {
+
+            /* ================================================
+               UNIQUE FILE PATH
+            ================================================ */
+
+            const uniqueId =
+                crypto.randomUUID();
+
+
+            const extension =
+                getExtension(
+                    file.name
+                );
+
+
+            storagePath =
+                `pages/${uniqueId}.${extension}`;
+
+
+            /* ================================================
+               STORAGE UPLOAD
+            ================================================ */
+
+            const uploadResponse =
+                await supabaseClient
+
+                    .storage
+
+                    .from(
+                        "ebook-images"
+                    )
+
+                    .upload(
+                        storagePath,
+                        file,
+                        {
+                            cacheControl:
+                                "31536000",
+
+                            contentType:
+                                file.type,
+
+                            upsert:
+                                false
+                        }
+                    );
+
+
+            if (
+                uploadResponse.error
+            ) {
+
+                throw uploadResponse.error;
+
+            }
+
+
+            /* ================================================
+               PUBLIC URL
+            ================================================ */
+
+            const publicUrlResponse =
+                supabaseClient
+
+                    .storage
+
+                    .from(
+                        "ebook-images"
+                    )
+
+                    .getPublicUrl(
+                        storagePath
+                    );
+
+
+            const publicUrl =
+                publicUrlResponse
+                    .data
+                    .publicUrl;
+
+
+            /* ================================================
+               DATABASE
+            ================================================ */
+
+            const insertResponse =
+                await supabaseClient
+
+                    .from(
+                        "ebook_pages"
+                    )
+
+                    .insert({
+                        title:
+                            file.name,
+
+                        image_path:
+                            storagePath,
+
+                        image_url:
+                            publicUrl,
+
+                        page_order:
+                            order,
+
+                        published:
+                            true
+                    });
+
+
+            if (
+                insertResponse.error
+            ) {
+
+                /*
+                    DB failed.
+                    Remove newly uploaded file.
+                */
+
+                await supabaseClient
+
+                    .storage
+
+                    .from(
+                        "ebook-images"
+                    )
+
+                    .remove([
+                        storagePath
+                    ]);
+
+
+                throw insertResponse.error;
+
+            }
+
+
+            order++;
+
+            successful++;
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                error
+            );
+
+        }
+
+    }
+
+
+    if (
+        successful > 0
+    ) {
+
+        showToast(
+            `${successful} gambar berhasil ditambahkan.`
+        );
+
+    } else {
+
+        showToast(
+            "Upload gagal."
+        );
+
+    }
+
+
+    await loadAdminPages();
+
+    await loadPublicPages();
+
+}
+
+
+/* ==========================================================
+   MOVE PAGE
+========================================================== */
+
+async function movePage(
+    index,
+    direction
+) {
+
+    const target =
+        index + direction;
+
+
+    if (
+        target < 0 ||
+        target >= adminPages.length
+    ) {
+
+        return;
+
+    }
+
+
+    const current =
+        adminPages[index];
+
+
+    const other =
+        adminPages[target];
+
+
+    const currentOrder =
+        current.page_order;
+
+
+    const otherOrder =
+        other.page_order;
+
+
+    /*
+        Temporary value prevents
+        collision during swapping.
+    */
+
+    const temporary =
+        -999999999;
+
+
+    let response;
+
+
+    response =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .update({
+                page_order:
+                    temporary
+            })
+
+            .eq(
+                "id",
+                current.id
+            );
+
+
+    if (
+        response.error
+    ) {
+
+        showToast(
+            "Gagal mengubah urutan."
+        );
+
+        return;
+
+    }
+
+
+    response =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .update({
+                page_order:
+                    currentOrder
+            })
+
+            .eq(
+                "id",
+                other.id
+            );
+
+
+    if (
+        response.error
+    ) {
+
+        showToast(
+            "Gagal mengubah urutan."
+        );
+
+        return;
+
+    }
+
+
+    response =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .update({
+                page_order:
+                    otherOrder
+            })
+
+            .eq(
+                "id",
+                current.id
+            );
+
+
+    if (
+        response.error
+    ) {
+
+        showToast(
+            "Gagal mengubah urutan."
+        );
+
+        return;
+
+    }
+
+
+    await loadAdminPages();
+
+    await loadPublicPages();
+
+}
+
+
+/* ==========================================================
+   PUBLISH TOGGLE
+========================================================== */
+
+async function togglePublished(
+    page
+) {
+
+    const response =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .update({
+                published:
+                    !page.published
+            })
+
+            .eq(
+                "id",
+                page.id
+            );
+
+
+    if (
+        response.error
+    ) {
+
+        console.error(
+            response.error
+        );
+
+        showToast(
+            "Gagal mengubah status."
+        );
+
+        return;
+
+    }
+
+
+    await loadAdminPages();
+
+    await loadPublicPages();
+
+
+    showToast(
+        page.published
+            ? "Halaman disembunyikan."
+            : "Halaman dipublikasikan."
+    );
+
+}
+
+
+/* ==========================================================
+   DELETE PAGE
+========================================================== */
+
+async function deletePage(
+    page
+) {
+
+    const confirmed =
+        window.confirm(
+            `Hapus halaman "${page.title}"?`
+        );
+
+
+    if (
+        !confirmed
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+        Delete DB first.
+    */
+
+    const databaseResponse =
+        await supabaseClient
+
+            .from(
+                "ebook_pages"
+            )
+
+            .delete()
+
+            .eq(
+                "id",
+                page.id
+            );
+
+
+    if (
+        databaseResponse.error
+    ) {
+
+        console.error(
+            databaseResponse.error
+        );
+
+        showToast(
+            "Gagal menghapus halaman."
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Delete Storage file.
+    */
+
+    if (
+        page.image_path
+    ) {
+
+        const storageResponse =
+            await supabaseClient
+
+                .storage
+
+                .from(
+                    "ebook-images"
+                )
+
+                .remove([
+                    page.image_path
+                ]);
+
+
+        if (
+            storageResponse.error
+        ) {
+
+            console.error(
+                storageResponse.error
+            );
+
+        }
+
+    }
+
+
+    await loadAdminPages();
+
+    await loadPublicPages();
+
+
+    showToast(
+        "Halaman dihapus."
+    );
+
+}
+
+
+/* ==========================================================
+   REFRESH ADMIN
+========================================================== */
+
+$("#refresh-admin")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await loadAdminPages();
+
+            await loadPublicPages();
+
+            showToast(
+                "Konten diperbarui."
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   PUBLISH ALL
+========================================================== */
+
+$("#publish")
+    .addEventListener(
+        "click",
+        async () => {
+
+            const response =
+                await supabaseClient
+
+                    .from(
+                        "ebook_pages"
+                    )
+
+                    .update({
+                        published:
+                            true
+                    })
+
+                    .eq(
+                        "published",
+                        false
+                    );
+
+
+            if (
+                response.error
+            ) {
+
+                console.error(
+                    response.error
+                );
+
+                showToast(
+                    "Publish gagal."
+                );
+
+                return;
+
+            }
+
+
+            await loadAdminPages();
+
+            await loadPublicPages();
+
+
+            showToast(
+                "Semua halaman dipublikasikan."
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   LOGOUT
+========================================================== */
+
+$("#logout")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            adminOverlay.classList.remove(
+                "open"
+            );
+
+
+            showToast(
+                "Logout berhasil."
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   AUTH STATE
+========================================================== */
+
+supabaseClient
+    .auth
+    .onAuthStateChange(
+        (event) => {
+
+            console.log(
+                "Auth:",
+                event
+            );
+
+        }
+    );
+
+
+/* ==========================================================
+   CLOSE OVERLAYS
+========================================================== */
+
+function closeOverlays() {
+
+    loginOverlay.classList.remove(
+        "open"
+    );
+
+    adminOverlay.classList.remove(
+        "open"
+    );
+
+    thumbnailPanel.classList.remove(
+        "open"
+    );
+
+    zoom.classList.remove(
+        "open"
+    );
+
+}
+
+
+/* ==========================================================
+   INITIALIZE
+========================================================== */
+
+async function initialize() {
+
+    try {
+
+        await loadPublicPages();
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            "Gagal memulai aplikasi."
+        );
+
+    }
+
+
+    setTimeout(
+        () => {
+
+            loader.classList.add(
+                "hide"
+            );
+
+        },
+        700
+    );
+
+}
+
+
+initialize();
+
+</script>
+
+</body>
+
+</html>
