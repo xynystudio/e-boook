@@ -2,278 +2,641 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Book Digital</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>E-Book Aktualisasi Premium 3D</title>
+  
+  <!-- Library Engine Kertas Asli (Paling Stabil) -->
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-
+    /* ========================================================
+       1. PENGATURAN DASAR & FONT
+       ======================================================== */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body, html {
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      background-color: #0f172a;
+      width: 100%; height: 100%; overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      display: flex; flex-direction: column;
+      -webkit-tap-highlight-color: transparent; 
+      user-select: none;
+      /* Animasi Background Ambient Premium */
+      background: linear-gradient(-45deg, #090d16, #0f172a, #020617);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
     }
 
-    /* 1. LOADING SCREEN */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Ambient Glow di belakang buku */
+    .ambient-glow {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw; height: 80vh;
+      background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ========================================================
+       2. HEADER GLASSMORPHISM (RUNNING LOGO)
+       ======================================================== */
+    .top-marquee-banner {
+      height: 65px; display: flex; align-items: center; position: relative;
+      overflow: hidden; z-index: 50; pointer-events: none; flex-shrink: 0;
+      /* Efek Kaca Premium */
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+    .marquee-fade-left, .marquee-fade-right {
+      position: absolute; top: 0; bottom: 0; width: 60px; z-index: 2;
+    }
+    .marquee-fade-left { left: 0; background: linear-gradient(to right, #090d16, transparent); }
+    .marquee-fade-right { right: 0; background: linear-gradient(to left, #090d16, transparent); }
+    
+    .marquee-track {
+      display: flex; white-space: nowrap; 
+      will-change: transform; /* Hardware Acceleration */
+      animation: marquee-scroll 30s linear infinite; /* Diperlambat agar elegan */
+    }
+    @keyframes marquee-scroll { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
+    .marquee-group { display: flex; align-items: center; gap: 2.5rem; padding-right: 2.5rem; }
+    
+    .logo-item {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255, 255, 255, 0.03); padding: 6px 14px;
+      border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    /* ========================================================
+       3. LOADING SCREEN CINEMATIC
+       ======================================================== */
     #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999;
-      transition: opacity 0.6s ease, visibility 0.6s;
+      position: fixed; inset: 0; z-index: 99999;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      background: #090d16; color: white;
+      transition: opacity 0.8s ease-in-out, visibility 0.8s;
+    }
+    
+    .loader-ring {
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: #38bdf8;
+      animation: spin-glow 1s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      margin-bottom: 20px;
+    }
+    @keyframes spin-glow { 100% { transform: rotate(360deg); } }
+    
+    .loading-text { font-weight: 800; font-size: 16px; letter-spacing: 1px; color: #f8fafc; }
+    .loading-sub { color: #94a3b8; font-size: 11px; margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;}
+
+    /* ========================================================
+       4. STAGE & ENGINE BUKU (AUTO-SCALE CERDAS)
+       ======================================================== */
+    .book-viewport {
+      flex: 1; width: 100%; height: 100%; display: flex;
+      justify-content: center; align-items: center;
+      overflow: hidden; position: relative; padding: 15px; z-index: 10;
+    }
+    
+    .book-scale-wrapper {
+      position: relative; display: flex; justify-content: center; align-items: center;
+      will-change: transform;
+      /* Animasi masuk sinematik */
+      opacity: 0; transform: scale(0.85);
+      transition: opacity 1s ease-out, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .book-scale-wrapper.loaded { opacity: 1; transform: scale(1); }
+
+    .flip-book {
+      /* Bayangan buku realistis (tebal di tengah, menyebar ke tepi) */
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 100px rgba(2, 132, 199, 0.1);
+      display: none; 
     }
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 25px;
-      padding: 10px 20px;
+    /* ========================================================
+       5. DESAIN KERTAS & PENCAHAYAAN (LIGHTING)
+       ======================================================== */
+    .page {
+      background-color: #f8fafc;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
     }
 
-    .loading-logo {
-      height: 55px;
-      width: auto;
-      object-fit: contain;
+    /* Efek Ketebalan Hardcover untuk Cover Depan & Belakang */
+    .page.page-cover { border: 2px solid #334155; }
+    .page.page-cover::before {
+      content: ''; position: absolute; top:0; bottom:0; width: 4px; background: rgba(255,255,255,0.2); z-index: 5;
     }
 
-    .spinner {
-      width: 42px;
-      height: 42px;
-      border: 4px solid #e2e8f0;
-      border-top: 4px solid #0284c7;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 12px;
+    .page-content {
+      width: 100%; height: 100%; position: relative;
+      display: flex; justify-content: center; align-items: center;
+      background-color: #fff;
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    /* Image Fit: Memastikan gambar A4 tidak gepeng/terpotong */
+    .page-content img {
+      width: 100%; height: 100%;
+      object-fit: fill; 
+      pointer-events: none; 
+      z-index: 2;
+      /* Skeleton loading color sebelum gambar dimuat */
+      background: #e2e8f0; 
     }
 
-    .loading-text {
-      color: #475569;
-      font-size: 0.95rem;
-      font-weight: 600;
+    /* Lighting Kertas (Gradient dinamis yang memberi ilusi cahaya saat dilipat) */
+    .page-lighting {
+      position: absolute; inset: 0; z-index: 3; pointer-events: none;
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0) 40%);
     }
+    /* Shadow Tulang Buku */
+    .page-shadow {
+      position: absolute; top:0; bottom:0; width: 30px; z-index: 4; pointer-events: none;
+    }
+    .page-right .page-shadow { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.15), transparent); }
+    .page-left .page-shadow { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.15), transparent); }
 
-    /* 2. TATA LETAK UTAMA */
-    .app-container {
-      display: flex;
-      height: 100vh;
-      width: 100vw;
+    /* ========================================================
+       6. FOOTER GLASSMORPHISM & KONTROL
+       ======================================================== */
+    .bottom-navbar {
+      height: 60px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 50; flex-shrink: 0;
+      /* Efek Kaca */
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
+    
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05); color: #f8fafc; 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 8px; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-btn:hover:not(:disabled) { 
+      background: #0284c7; border-color: #38bdf8; 
+      transform: translateY(-2px); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+    }
+    .nav-btn:active:not(:disabled) { transform: translateY(0); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    
+    .nav-btn svg { width: 16px; height: 16px; stroke-width: 2.5px; }
 
-    /* SIDEBAR NAVIGATION */
-    .sidebar {
-      width: 280px;
-      background: #1e293b;
-      color: #f8fafc;
-      padding: 20px 15px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-      z-index: 10;
-      overflow-y: auto;
+    .page-indicator { 
+      background: rgba(0, 0, 0, 0.3); padding: 6px 16px; border-radius: 20px;
+      color: #cbd5e1; font-size: 12px; font-weight: 600; 
+      border: 1px solid rgba(255,255,255,0.05);
     }
-
-    .sidebar-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #334155;
-      color: #38bdf8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .menu-section {
-      font-size: 0.8rem;
-      color: #64748b;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin: 15px 0 8px 5px;
-      letter-spacing: 0.5px;
-    }
-
-    .sidebar nav ul {
-      list-style: none;
-    }
-
-    .sidebar nav li {
-      margin-bottom: 6px;
-    }
-
-    .sidebar nav a {
-      color: #94a3b8;
-      text-decoration: none;
-      display: block;
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    .sidebar nav a:hover, 
-    .sidebar nav a.active {
-      background: #0284c7;
-      color: #ffffff;
-    }
-
-    /* AREA KONTEN (PEMBACA) */
-    .content-area {
-      flex: 1;
-      height: 100%;
-      background: #334155;
-      position: relative;
-    }
-
-    /* Tampilan Halaman Gambar (Cover, Pengesahan, dll) */
-    .image-viewer {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      overflow-y: auto;
-      background: #0f172a;
-    }
-
-    .image-viewer img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      border-radius: 4px;
-    }
-
-    /* Bingkai Halaman HTML / Bab */
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
-      background: #ffffff;
-    }
+    .page-indicator span { color: #38bdf8; font-weight: 800; font-size: 14px;}
   </style>
 </head>
 <body>
 
-  <!-- LOADING SCREEN DENGAN LOGO INSTANSI -->
-  <div id="loading-screen">
-    <div class="logo-container">
-      <img src="https://bpsdm.sumutprov.go.id/v1/wp-content/uploads/2021/08/logo-bpsdm-sumut.png" alt="BPSDM SUMUT" class="loading-logo">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Lambang_Kabupaten_Deli_Serdang.png" alt="Pemkab Deli Serdang" class="loading-logo">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_Lembaga_Administrasi_Negara.png" alt="LAN RI" class="loading-logo">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_BerAKHLAK.svg/1200px-Logo_BerAKHLAK.svg.png" alt="BerAKHLAK" class="loading-logo">
-      <img src="https://bpsdm.sumutprov.go.id/v1/wp-content/uploads/2022/01/SUMUT-CORPU.png" alt="SUMUT CORPU" class="loading-logo">
+  <!-- Ambient Glow Background -->
+  <div class="ambient-glow"></div>
+
+  <!-- 1. HEADER (RUNNING BANNER) -->
+  <header class="top-marquee-banner">
+    <div class="marquee-fade-left"></div><div class="marquee-fade-right"></div>
+    <div class="marquee-track">
+      <div class="marquee-group" id="marquee-group-1"></div>
+      <div class="marquee-group" id="marquee-group-2"></div>
     </div>
+  </header>
 
-    <div class="spinner"></div>
-    <p class="loading-text">Memuat E-Book...</p>
+  <!-- 2. LOADING SCREEN (SAFE MODE) -->
+  <div id="loading-screen">
+    <div class="loader-ring"></div>
+    <div class="loading-text">MEMBANGUN BUKU REALISTIS</div>
+    <div class="loading-sub">Sistem Pendataan & Rekapitulasi (SIPETANI)</div>
   </div>
 
-  <!-- CONTAINER UTAMA E-BOOK -->
-  <div class="app-container">
-    
-    <!-- SIDEBAR / DAFTAR ISI -->
-    <aside class="sidebar">
-      <div class="sidebar-title">E-Book Reader</div>
-      <nav>
-        <div class="menu-section">Halaman Depan</div>
-        <ul>
-          <li><a onclick="showImage('cover.jpg', this)" class="active">1. Cover Depan</a></li>
-          <li><a onclick="showImage('pengesahan.jpg', this)">2. Lembar Pengesahan</a></li>
-          <li><a onclick="showImage('gambar3.jpg', this)">3. Halaman Depan 3</a></li>
-          <li><a onclick="showImage('gambar4.jpg', this)">4. Halaman Depan 4</a></li>
-        </ul>
+  <!-- 3. STAGE BUKU -->
+  <main class="book-viewport" id="book-viewport">
+    <div class="book-scale-wrapper" id="scale-wrapper">
+      <div class="flip-book" id="flip-book">
+        
+        <!-- 
+        ====================================================================
+        👇 AREA MEMASUKKAN GAMBAR (30 HALAMAN) 👇
+        Ubah src="..." dengan nama file gambar PNG/JPG A4 Anda.
+        ==================================================================== 
+        -->
 
-        <div class="menu-section">Daftar Bab</div>
-        <ul>
-          <!-- Link ke file HTML bab berikutnya -->
-          <li><a onclick="showHtml('bab1.html', this)">Bab 1</a></li>
-          <li><a onclick="showHtml('bab2.html', this)">Bab 2</a></li>
-          <li><a onclick="showHtml('bab3.html', this)">Bab 3</a></li>
-        </ul>
-      </nav>
-    </aside>
+        <!-- Hal 1 (Cover Depan) -->
+        <div class="page page-cover page-right" data-density="hard">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/0f172a/FFF?text=COVER+DEPAN" alt="Hal 1">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
 
-    <!-- AREA TAMPILAN KONTEN -->
-    <main class="content-area">
-      <!-- Container untuk menampilkan Gambar (Cover, Pengesahan, dll) -->
-      <div id="image-viewer" class="image-viewer">
-        <!-- Default menampilkan Cover Depan -->
-        <img id="main-image" src="cover.jpg" alt="Halaman Gambar">
+        <!-- Hal 2 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/1e293b/FFF?text=HALAMAN+2" alt="Hal 2">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 3 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/334155/FFF?text=HALAMAN+3" alt="Hal 3">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 4 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/475569/FFF?text=HALAMAN+4" alt="Hal 4">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 5 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/64748b/FFF?text=HALAMAN+5" alt="Hal 5">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 6 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/94a3b8/FFF?text=HALAMAN+6" alt="Hal 6">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 7 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/cbd5e1/1e293b?text=HALAMAN+7" alt="Hal 7">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 8 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/e2e8f0/1e293b?text=HALAMAN+8" alt="Hal 8">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 9 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/f1f5f9/1e293b?text=HALAMAN+9" alt="Hal 9">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 10 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/f8fafc/1e293b?text=HALAMAN+10" alt="Hal 10">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 11 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/0284c7/FFF?text=HALAMAN+11" alt="Hal 11">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 12 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/0369a1/FFF?text=HALAMAN+12" alt="Hal 12">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 13 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/075985/FFF?text=HALAMAN+13" alt="Hal 13">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 14 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/0c4a6e/FFF?text=HALAMAN+14" alt="Hal 14">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 15 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/16a34a/FFF?text=HALAMAN+15" alt="Hal 15">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 16 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/15803d/FFF?text=HALAMAN+16" alt="Hal 16">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 17 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/166534/FFF?text=HALAMAN+17" alt="Hal 17">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 18 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/14532d/FFF?text=HALAMAN+18" alt="Hal 18">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 19 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/ca8a04/FFF?text=HALAMAN+19" alt="Hal 19">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 20 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/a16207/FFF?text=HALAMAN+20" alt="Hal 20">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 21 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/854d0e/FFF?text=HALAMAN+21" alt="Hal 21">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 22 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/713f12/FFF?text=HALAMAN+22" alt="Hal 22">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 23 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/dc2626/FFF?text=HALAMAN+23" alt="Hal 23">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 24 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/b91c1c/FFF?text=HALAMAN+24" alt="Hal 24">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 25 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/991b1b/FFF?text=HALAMAN+25" alt="Hal 25">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 26 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/7f1d1d/FFF?text=HALAMAN+26" alt="Hal 26">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 27 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/c026d3/FFF?text=HALAMAN+27" alt="Hal 27">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 28 -->
+        <div class="page page-left">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/a21caf/FFF?text=HALAMAN+28" alt="Hal 28">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 29 -->
+        <div class="page page-right">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/86198f/FFF?text=HALAMAN+29" alt="Hal 29">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Hal 30 (Cover Belakang) -->
+        <div class="page page-cover page-left" data-density="hard">
+          <div class="page-content">
+            <img src="https://placehold.co/840x1188/090d16/FFF?text=COVER+BELAKANG" alt="Hal 30">
+            <div class="page-lighting"></div><div class="page-shadow"></div>
+          </div>
+        </div>
+
+        <!-- 👆 BATAS AREA HALAMAN 👆 -->
+
       </div>
+    </div>
+  </main>
 
-      <!-- Frame untuk menampilkan file HTML (Bab) -->
-      <iframe id="book-frame" name="book-frame"></iframe>
-    </main>
+  <!-- 4. FOOTER (KONTROL NAVIGASI) -->
+  <footer class="bottom-navbar">
+    <button class="nav-btn" id="btn-prev" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      <span>Sebelumnya</span>
+    </button>
+    
+    <div class="page-indicator">Hal <span id="current-page-num">1</span> / <span id="total-page-num">30</span></div>
+    
+    <button class="nav-btn" id="btn-next">
+      <span>Selanjutnya</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </footer>
 
-  </div>
-
-  <!-- JAVASCRIPT UTAMA -->
+  <!-- ========================================================
+       5. JAVASCRIPT: ENGINE & OPTIMASI ANTI-ERROR
+       ======================================================== -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const loadingScreen = document.getElementById("loading-screen");
+    // --- DATA LOGO Vektor (Cepat Dimuat, Anti Pecah) ---
+    const LOGO_DATA = [
+      { svg: `<svg width="34" height="40" viewBox="0 0 100 120"><path d="M50 5 L90 25 L90 75 L50 115 L10 75 L10 25 Z" fill="#15803d" stroke="#facc15" stroke-width="4"/><path d="M50 20 L80 35 L80 68 L50 100 L20 68 L20 35 Z" fill="#0284c7"/><circle cx="50" cy="55" r="16" fill="#facc15"/><path d="M50 42 L55 52 L65 52 L57 58 L60 68 L50 62 L40 68 L43 58 L35 52 L45 52 Z" fill="#b91c1c"/></svg>`, text1: "BPSDM SUMUT", text2: "Provinsi Sumatera Utara", color: "#15803d" },
+      { svg: `<svg width="34" height="40" viewBox="0 0 100 120"><path d="M50 10 C75 10 90 30 90 60 C90 90 65 110 50 115 C35 110 10 90 10 60 C10 30 25 10 50 10 Z" fill="#1e3a8a" stroke="#ca8a04" stroke-width="4"/><circle cx="50" cy="50" r="22" fill="#16a34a"/><rect x="25" y="80" width="50" height="12" rx="3" fill="#ffffff" stroke="#1e3a8a"/><text x="50" y="89" font-size="7" font-weight="bold" fill="#1e3a8a" text-anchor="middle">DELI SERDANG</text></svg>`, text1: "DELI SERDANG", text2: "Pemerintah Kabupaten", color: "#ca8a04" },
+      { svg: `<svg width="34" height="34" viewBox="0 0 100 100"><path d="M20 20 L50 40 L20 60 Z" fill="#dc2626"/><path d="M80 20 L50 40 L80 60 Z" fill="#2563eb"/><path d="M50 40 L80 60 L50 80 L20 60 Z" fill="#16a34a"/><circle cx="50" cy="40" r="8" fill="#facc15"/><text x="50" y="92" font-size="14" font-weight="900" fill="#1e293b" text-anchor="middle">LAN RI</text></svg>`, text1: "LAN RI", text2: "Makarti Bhakti Nagari", color: "#dc2626" },
+      { svg: `<svg width="75" height="26" viewBox="0 0 140 50"><text x="0" y="35" font-size="32" font-weight="900" fill="#dc2626">Ber</text><text x="55" y="35" font-size="32" font-weight="900" fill="#f8fafc">AKHLAK</text></svg>`, isCustom: true },
+      { svg: `<svg width="80" height="38" viewBox="0 0 130 50"><path d="M10 12 Q 65 -2 120 12" fill="none" stroke="#eab308" stroke-width="6" stroke-linecap="round"/><text x="65" y="24" font-size="20" font-weight="900" fill="#38bdf8" text-anchor="middle">SUMUT</text><text x="65" y="42" font-size="19" font-weight="900" fill="#0284c7" text-anchor="middle">CORPU</text></svg>`, isCustom: true }
+    ];
 
-      // Hilangkan loading screen setelah 1.2 detik
+    function initLogos() {
+      const m1 = document.getElementById("marquee-group-1");
+      const m2 = document.getElementById("marquee-group-2");
+      let html = "";
+      LOGO_DATA.forEach(l => {
+        if (l.isCustom) { html += `<div class="logo-item">${l.svg}</div>`; } 
+        else { html += `<div class="logo-item">${l.svg}<div style="display:flex; flex-direction:column;"><span style="font-size:11px; font-weight:800; color:#fff; line-height:1;">${l.text1}</span><span style="font-size:9px; font-weight:700; color:${l.color}; line-height:1;">${l.text2}</span></div></div>`; }
+      });
+      m1.innerHTML = m2.innerHTML = html;
+    }
+
+    // Variabel Global
+    let pageFlip;
+    const PAGE_W = 420; // Proporsi Asli A4 Potrait
+    const PAGE_H = 594; 
+
+    // --- INISIALISASI ---
+    document.addEventListener("DOMContentLoaded", () => {
+      initLogos();
+
+      // Safe Mode: Loading paksa selesai dalam 1 detik untuk jaminan stabilitas
       setTimeout(() => {
-        loadingScreen.style.opacity = "0";
-        setTimeout(() => {
-          loadingScreen.style.visibility = "hidden";
-        }, 600);
-      }, 1200);
+        const loading = document.getElementById("loading-screen");
+        loading.style.opacity = "0";
+        setTimeout(() => { 
+          loading.style.display = "none"; 
+          document.getElementById("flip-book").style.display = "block";
+          initEngine();
+        }, 800);
+      }, 1000); 
     });
 
-    // Fungsi untuk menampilkan Halaman Gambar (Cover, Pengesahan, dsb)
-    function showImage(imagePath, element) {
-      setActiveMenu(element);
-      document.getElementById('book-frame').style.display = 'none';
-      
-      const imageViewer = document.getElementById('image-viewer');
-      const mainImage = document.getElementById('main-image');
-      
-      mainImage.src = imagePath;
-      imageViewer.style.display = 'flex';
+    // --- MESIN FISIKA BUKU ---
+    function initEngine() {
+      // Error Boundary: Jika CDN gagal dimuat, cegah blank white screen
+      if (typeof St === 'undefined') {
+        document.getElementById('loading-screen').innerHTML = "<div style='color:red; font-weight:bold;'>Gagal memuat sistem 3D. Pastikan koneksi internet aktif, lalu muat ulang halaman.</div>";
+        document.getElementById('loading-screen').style.display = 'flex';
+        document.getElementById('loading-screen').style.opacity = '1';
+        return;
+      }
+
+      const bookEl = document.getElementById("flip-book");
+      const totalPages = document.querySelectorAll(".page").length;
+      document.getElementById("total-page-num").innerText = totalPages;
+
+      // Konfigurasi Premium
+      pageFlip = new St.PageFlip(bookEl, {
+        width: PAGE_W, height: PAGE_H,
+        size: "fixed",
+        minWidth: 280, maxWidth: 800, minHeight: 380, maxHeight: 1100,
+        maxShadowOpacity: 0.7, // Shadow lebih pekat agar terkesan 3D nyata
+        showCover: true,
+        mobileScrollSupport: false,
+        useMouseEvents: true, // Berfungsi untuk swipe drag di layar HP
+        flippingTime: 1100 // Kecepatan membalik elegan
+      });
+
+      pageFlip.loadFromHTML(document.querySelectorAll(".page"));
+
+      // Event Update Navigasi
+      pageFlip.on("flip", (e) => {
+        const currentIdx = e.data; 
+        let displayPage = currentIdx === 0 ? 1 : (currentIdx + 1);
+        
+        // Mode baca 2 lembar
+        if (pageFlip.getOrientation() === 'landscape' && currentIdx > 0 && currentIdx < totalPages - 1) {
+           displayPage = `${currentIdx} - ${currentIdx + 1}`;
+        }
+        document.getElementById("current-page-num").innerText = displayPage;
+
+        document.getElementById("btn-prev").disabled = (currentIdx === 0);
+        document.getElementById("btn-next").disabled = (currentIdx >= totalPages - 1);
+      });
+
+      // Pemicu Auto-Scale saat status (buka/tutup/putar layar) berubah
+      pageFlip.on("changeState", () => { requestAnimationFrame(smartScale); });
+
+      // Binding Tombol Bawah
+      document.getElementById("btn-prev").addEventListener("click", () => pageFlip.flipPrev());
+      document.getElementById("btn-next").addEventListener("click", () => pageFlip.flipNext());
+
+      // Kalkulasi Awal & Animasi Masuk (Cinematic Entry)
+      smartScale();
+      setTimeout(() => {
+        document.getElementById("scale-wrapper").classList.add("loaded");
+      }, 100);
+
+      // Listener Resize Jendela dengan optimasi (Debounce via rAF)
+      window.addEventListener("resize", () => requestAnimationFrame(smartScale));
     }
 
-    // Fungsi untuk menampilkan File HTML (Bab 1, Bab 2, dsb)
-    function showHtml(htmlPath, element) {
-      setActiveMenu(element);
-      document.getElementById('image-viewer').style.display = 'none';
-      
-      const iframe = document.getElementById('book-frame');
-      iframe.src = htmlPath;
-      iframe.style.display = 'block';
-    }
+    // --- ALGORITMA SKALA CERDAS (ANTI TERPOTONG) ---
+    function smartScale() {
+      if (!pageFlip) return;
 
-    // Fungsi mengatur highlight warna tombol menu yang aktif
-    function setActiveMenu(element) {
-      const allLinks = document.querySelectorAll('.sidebar nav a');
-      allLinks.forEach(link => link.classList.remove('active'));
-      element.classList.add('active');
+      const viewport = document.getElementById("book-viewport");
+      const wrapper = document.getElementById("scale-wrapper");
+      
+      const vW = viewport.clientWidth;
+      const vH = viewport.clientHeight;
+
+      const isLandscape = pageFlip.getOrientation() === 'landscape';
+      const currentIdx = pageFlip.getCurrentPageIndex();
+      const isCover = (currentIdx === 0 || currentIdx === pageFlip.getPageCount() - 1);
+      
+      // Hitung target dimensi buku (2 lebar A4 jika terbuka, 1 lebar jika tertutup)
+      const targetW = (isLandscape && !isCover) ? (PAGE_W * 2) : PAGE_W;
+      const targetH = PAGE_H;
+
+      // Jarak Aman Tepi Layar (Padding)
+      const paddingX = 40; 
+      const paddingY = 40;
+
+      // Ratio Scaling
+      const scaleX = (vW - paddingX) / targetW;
+      const scaleY = (vH - paddingY) / targetH;
+      let finalScale = Math.min(scaleX, scaleY);
+      
+      // Batasan (Limit): Jangan sampai pecah terlalu besar di monitor ultra-wide
+      if (finalScale > 1.4) finalScale = 1.4;
+
+      // Eksekusi Transformasi
+      wrapper.style.transform = `scale(${finalScale})`;
     }
   </script>
-
 </body>
 </html>
+
+
